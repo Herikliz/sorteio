@@ -1,74 +1,111 @@
 body {
-  font-family: sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
   margin: 0;
   padding: 20px;
 }
 .container {
   max-width: 800px;
   margin: 0 auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: #1e1e1e;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 h1 {
   text-align: center;
+  color: #ffffff;
+  margin-bottom: 25px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 .panel {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
   flex-wrap: wrap;
-  padding: 15px;
-  background: #eef;
-  border-radius: 6px;
+  padding: 18px;
+  background: #252526;
+  border-radius: 8px;
   align-items: center;
+  border: 1px solid #333;
 }
 input, select, button {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px 14px;
+  border: 1px solid #444;
+  border-radius: 6px;
   font-size: 14px;
+  background-color: #333;
+  color: #fff;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+input:focus, select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
 }
 button {
-  background-color: #2c3e50;
+  background-color: #6366f1;
   color: white;
   cursor: pointer;
   border: none;
-  font-weight: bold;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 button:hover {
-  background-color: #1a252f;
+  background-color: #4f46e5;
+  transform: translateY(-1px);
 }
 .btn-delete {
-  background-color: #e74c3c;
-  padding: 6px 10px;
+  background-color: #ef4444;
+  padding: 8px 12px;
   font-size: 12px;
   margin-left: 10px;
 }
 .btn-delete:hover {
-  background-color: #c0392b;
+  background-color: #dc2626;
 }
 ul {
   list-style: none;
   padding: 0;
 }
 li {
-  background: #fafafa;
-  margin-bottom: 8px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: #2a2a2a;
+  margin-bottom: 12px;
+  padding: 15px 18px;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border-color: #555;
 }
 #sorteioResult {
-  margin-top: 20px;
-  padding: 15px;
-  background: #e8f5e9;
-  border-radius: 6px;
+  margin-top: 25px;
+  padding: 20px;
+  background: #1e293b;
+  border-radius: 8px;
   display: none;
+  border-left: 5px solid #6366f1;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+#sorteioResult h3 {
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+#sorteioResult ul li {
+  background: #2a3441;
+  border-color: #3b4c63;
+}
+#sorteioResult ul li:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #3b4c63;
 }

@@ -127,7 +127,6 @@ function sortear() {
         content += ` (${item.subtype})`;
       }
       li.textContent = content;
-      li.style.background = '#fff';
       ul.appendChild(li);
     });
     resultEl.appendChild(ul);
