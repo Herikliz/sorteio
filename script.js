@@ -18,6 +18,7 @@ let items = [];
 
 const newType = document.getElementById('newType');
 const newSubtype = document.getElementById('newSubtype');
+const newSea = document.getElementById('newSea');
 const newName = document.getElementById('newName');
 const searchInput = document.getElementById('searchInput');
 const filterCategory = document.getElementById('filterCategory');
@@ -27,10 +28,12 @@ const sorteioResult = document.getElementById('sorteioResult');
 function updateSubtypes() {
   newSubtype.innerHTML = '';
   if (newType.value === 'Akuma no Mi') {
+    newSea.style.display = 'none';
     ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
       newSubtype.add(new Option(s, s));
     });
   } else {
+    newSea.style.display = 'inline-block';
     ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
       newSubtype.add(new Option(s, s));
     });
@@ -43,12 +46,19 @@ updateSubtypes();
 document.getElementById('addBtn').addEventListener('click', async () => {
   const nameVal = newName.value.trim();
   if (!nameVal) return;
-  await addDoc(colRef, {
+  
+  let dataToSave = {
     name: nameVal,
     type: newType.value,
     subtype: newSubtype.value,
     ocupada: false
-  });
+  };
+  
+  if (newType.value === 'Ilha') {
+    dataToSave.mar = newSea.value;
+  }
+
+  await addDoc(colRef, dataToSave);
   newName.value = '';
 });
 
@@ -116,7 +126,7 @@ function renderList() {
   const search = searchInput.value.toLowerCase();
   const cat = filterCategory.value;
 
-  const filtered = items.filter(item => {
+  let filtered = items.filter(item => {
     const matchSearch = item.name.toLowerCase().includes(search);
     let matchCat = false;
     
@@ -126,6 +136,11 @@ function renderList() {
     if (cat === 'Ilhas' && item.type === 'Ilha') matchCat = true;
 
     return matchSearch && matchCat;
+  });
+
+  filtered.sort((a, b) => {
+    if (a.type !== b.type) return a.type.localeCompare(b.type);
+    return a.name.localeCompare(b.name);
   });
 
   filtered.forEach(item => {
@@ -142,8 +157,17 @@ function renderList() {
     }
 
     const span = document.createElement('span');
-    span.textContent = `${item.name} (${item.subtype})`;
+    let itemText = `${item.name} (${item.subtype})`;
+    if (item.type === 'Ilha' && item.mar) {
+      itemText += ` - ${item.mar}`;
+    }
+    span.textContent = itemText;
     li.appendChild(span);
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Editar';
+    editBtn.style.backgroundColor = '#f39c12';
+    editBtn.style.marginRight = '10px';
 
     const delBtn = document.createElement('button');
     delBtn.textContent = 'Remover';
@@ -165,12 +189,77 @@ function renderList() {
       label.appendChild(document.createTextNode('Ocupada'));
       li.appendChild(label);
     } else {
-      delBtn.style.marginLeft = 'auto';
+      editBtn.style.marginLeft = 'auto';
     }
+
+    editBtn.addEventListener('click', () => {
+      li.innerHTML = '';
+      li.style.flexWrap = 'wrap';
+      li.style.gap = '10px';
+
+      const editName = document.createElement('input');
+      editName.type = 'text';
+      editName.value = item.name;
+      editName.style.flex = '1';
+
+      const editType = document.createElement('select');
+      editType.innerHTML = `<option value="Akuma no Mi" ${item.type === 'Akuma no Mi' ? 'selected' : ''}>Akuma no Mi</option>
+                            <option value="Ilha" ${item.type === 'Ilha' ? 'selected' : ''}>Ilha</option>`;
+
+      const editSubtype = document.createElement('select');
+
+      const editSea = document.createElement('select');
+      ['East Blue', 'West Blue', 'North Blue', 'South Blue', 'Paraíso', 'Novo Mundo', 'Calm Belt'].forEach(s => {
+        editSea.add(new Option(s, s, false, s === item.mar));
+      });
+
+      function updateEditSubtypes() {
+        editSubtype.innerHTML = '';
+        if (editType.value === 'Akuma no Mi') {
+          editSea.style.display = 'none';
+          ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
+            editSubtype.add(new Option(s, s, false, s === item.subtype));
+          });
+        } else {
+          editSea.style.display = 'inline-block';
+          ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
+            editSubtype.add(new Option(s, s, false, s === item.subtype));
+          });
+        }
+      }
+      editType.addEventListener('change', updateEditSubtypes);
+      updateEditSubtypes();
+
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = 'Salvar';
+      saveBtn.style.backgroundColor = '#27ae60';
+      saveBtn.addEventListener('click', async () => {
+        let dataToUpdate = {
+          name: editName.value.trim(),
+          type: editType.value,
+          subtype: editSubtype.value
+        };
+        if (editType.value === 'Ilha') {
+          dataToUpdate.mar = editSea.value;
+        } else {
+          dataToUpdate.mar = null;
+        }
+        await updateDoc(doc(db, "lista_one_piece_db", item.id), dataToUpdate);
+      });
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = 'Cancelar';
+      cancelBtn.style.backgroundColor = '#7f8c8d';
+      cancelBtn.addEventListener('click', () => renderList());
+
+      li.append(editName, editType, editSubtype, editSea, saveBtn, cancelBtn);
+    });
 
     delBtn.addEventListener('click', async () => {
       await deleteDoc(doc(db, "lista_one_piece_db", item.id));
     });
+    
+    li.appendChild(editBtn);
     li.appendChild(delBtn);
 
     itemList.appendChild(li);
@@ -209,7 +298,11 @@ document.getElementById('sortearBtn').addEventListener('click', () => {
     const ul = document.createElement('ul');
     sorteados.forEach(item => {
       const li = document.createElement('li');
-      li.textContent = `${item.name} (${item.subtype})`;
+      let textoSorteio = `${item.name} (${item.subtype})`;
+      if (item.type === 'Ilha' && item.mar) {
+        textoSorteio += ` - ${item.mar}`;
+      }
+      li.textContent = textoSorteio;
       ul.appendChild(li);
     });
     sorteioResult.appendChild(ul);
