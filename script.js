@@ -44,21 +44,29 @@ newType.addEventListener('change', updateSubtypes);
 updateSubtypes();
 
 document.getElementById('addBtn').addEventListener('click', async () => {
-  const nameVal = newName.value.trim();
-  if (!nameVal) return;
+  const rawText = newName.value.trim();
+  if (!rawText) return;
+
+  const names = rawText.split('\n');
   
-  let dataToSave = {
-    name: nameVal,
-    type: newType.value,
-    subtype: newSubtype.value,
-    ocupada: false
-  };
-  
-  if (newType.value === 'Ilha') {
-    dataToSave.mar = newSea.value;
+  for (let i = 0; i < names.length; i++) {
+    const nameVal = names[i].trim();
+    if (!nameVal) continue;
+    
+    let dataToSave = {
+      name: nameVal,
+      type: newType.value,
+      subtype: newSubtype.value,
+      ocupada: false
+    };
+    
+    if (newType.value === 'Ilha') {
+      dataToSave.mar = newSea.value;
+    }
+
+    await addDoc(colRef, dataToSave);
   }
 
-  await addDoc(colRef, dataToSave);
   newName.value = '';
 });
 
@@ -130,9 +138,8 @@ function renderList() {
     const matchSearch = item.name.toLowerCase().includes(search);
     let matchCat = false;
     
-    if (cat === 'Paramecias' && item.type === 'Akuma no Mi' && item.subtype.includes('Paramecia')) matchCat = true;
-    if (cat === 'Logias' && item.type === 'Akuma no Mi' && item.subtype === 'Logia') matchCat = true;
-    if (cat === 'Zoans' && item.type === 'Akuma no Mi' && item.subtype.includes('Zoan')) matchCat = true;
+    if (cat === 'Tudo') matchCat = true;
+    if (cat === 'Frutas' && item.type === 'Akuma no Mi') matchCat = true;
     if (cat === 'Ilhas' && item.type === 'Ilha') matchCat = true;
 
     return matchSearch && matchCat;

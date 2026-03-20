@@ -11,7 +11,7 @@
   <h1>Gerenciador de Itens</h1>
 
   <div class="panel">
-    <input type="text" id="newName" placeholder="Nome do Item">
+    <textarea id="newName" placeholder="Nome do Item (cole a lista, um por linha)" style="padding: 10px 14px; border: 1px solid #444; border-radius: 6px; font-size: 14px; background-color: #333; color: #fff; min-width: 200px; height: 38px; resize: vertical; font-family: 'Segoe UI', sans-serif;"></textarea>
     <select id="newType">
       <option value="Akuma no Mi">Akuma no Mi</option>
       <option value="Ilha">Ilha</option>
@@ -32,10 +32,9 @@
   <div class="panel">
     <input type="text" id="searchInput" placeholder="Pesquisar por nome...">
     <select id="filterCategory">
-      <option value="Paramecias">Paramecias</option>
-      <option value="Logias">Logias</option>
-      <option value="Zoans">Zoans</option>
-      <option value="Ilhas">Ilhas</option>
+      <option value="Tudo">Mostrar Tudo</option>
+      <option value="Frutas">Todas as Frutas</option>
+      <option value="Ilhas">Somente Ilhas</option>
     </select>
     <button id="sortearBtn">Sortear Itens</button>
   </div>
