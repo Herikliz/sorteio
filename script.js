@@ -29,11 +29,15 @@ function updateSubtypes() {
   newSubtype.innerHTML = '';
   if (newType.value === 'Akuma no Mi') {
     newSea.style.display = 'none';
+    newSubtype.multiple = false;
+    newSubtype.style.height = 'auto';
     ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
       newSubtype.add(new Option(s, s));
     });
   } else {
     newSea.style.display = 'inline-block';
+    newSubtype.multiple = true;
+    newSubtype.style.height = '80px';
     ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
       newSubtype.add(new Option(s, s));
     });
@@ -48,6 +52,7 @@ document.getElementById('addBtn').addEventListener('click', async () => {
   if (!rawText) return;
 
   const names = rawText.split('\n');
+  const selectedSubtypes = Array.from(newSubtype.selectedOptions).map(opt => opt.value).join(', ');
   
   for (let i = 0; i < names.length; i++) {
     const nameVal = names[i].trim();
@@ -59,7 +64,7 @@ document.getElementById('addBtn').addEventListener('click', async () => {
     let dataToSave = {
       name: nameVal,
       type: newType.value,
-      subtype: newSubtype.value,
+      subtype: selectedSubtypes,
       ocupada: false,
       criadoEm: Date.now()
     };
@@ -238,21 +243,26 @@ function renderList() {
       const editSubtype = document.createElement('select');
 
       const editSea = document.createElement('select');
-      ['East Blue', 'West Blue', 'North Blue', 'South Blue', 'Paraíso', 'Novo Mundo', 'Calm Belt'].forEach(s => {
+      ['East Blue', 'West Blue', 'North Blue', 'South Blue', 'Paraíso', 'Novo Mundo', 'Calm Belt', 'Localização Desconhecida'].forEach(s => {
         editSea.add(new Option(s, s, false, s === item.mar));
       });
 
       function updateEditSubtypes() {
         editSubtype.innerHTML = '';
+        const currentSubtypes = item.subtype ? item.subtype.split(', ') : [];
         if (editType.value === 'Akuma no Mi') {
           editSea.style.display = 'none';
+          editSubtype.multiple = false;
+          editSubtype.style.height = 'auto';
           ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
             editSubtype.add(new Option(s, s, false, s === item.subtype));
           });
         } else {
           editSea.style.display = 'inline-block';
+          editSubtype.multiple = true;
+          editSubtype.style.height = '80px';
           ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
-            editSubtype.add(new Option(s, s, false, s === item.subtype));
+            editSubtype.add(new Option(s, s, false, currentSubtypes.includes(s)));
           });
         }
       }
@@ -263,10 +273,11 @@ function renderList() {
       saveBtn.textContent = 'Salvar';
       saveBtn.style.backgroundColor = '#27ae60';
       saveBtn.addEventListener('click', async () => {
+        const selectedEditSubtypes = Array.from(editSubtype.selectedOptions).map(opt => opt.value).join(', ');
         let dataToUpdate = {
           name: editName.value.trim(),
           type: editType.value,
-          subtype: editSubtype.value
+          subtype: selectedEditSubtypes
         };
         if (editType.value === 'Ilha') {
           dataToUpdate.mar = editSea.value;
