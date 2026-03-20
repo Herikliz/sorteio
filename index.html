@@ -1,74 +1,56 @@
-body {
-  font-family: sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
-  margin: 0;
-  padding: 20px;
-}
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-h1 {
-  text-align: center;
-}
-.panel {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  padding: 15px;
-  background: #eef;
-  border-radius: 6px;
-  align-items: center;
-}
-input, select, button {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-button {
-  background-color: #2c3e50;
-  color: white;
-  cursor: pointer;
-  border: none;
-  font-weight: bold;
-}
-button:hover {
-  background-color: #1a252f;
-}
-.btn-delete {
-  background-color: #e74c3c;
-  padding: 6px 10px;
-  font-size: 12px;
-  margin-left: 10px;
-}
-.btn-delete:hover {
-  background-color: #c0392b;
-}
-ul {
-  list-style: none;
-  padding: 0;
-}
-li {
-  background: #fafafa;
-  margin-bottom: 8px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-#sorteioResult {
-  margin-top: 20px;
-  padding: 15px;
-  background: #e8f5e9;
-  border-radius: 6px;
-  display: none;
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerenciador de Lista</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Gerenciador de Itens</h1>
+
+  <div class="panel">
+    <input type="text" id="newName" placeholder="Nome do Item">
+    <select id="newType" onchange="toggleSubtype()">
+      <option value="Akuma no Mi">Akuma no Mi</option>
+      <option value="Ilha">Ilha</option>
+    </select>
+    <select id="newSubtype">
+      <option value="Paramecia">Paramecia</option>
+      <option value="Paramecia Especial">Paramecia Especial</option>
+      <option value="Logia">Logia</option>
+      <option value="Zoan">Zoan</option>
+      <option value="Zoan Ancestral">Zoan Ancestral</option>
+      <option value="Zoan Mítica">Zoan Mítica</option>
+    </select>
+    <button onclick="addItem()">Adicionar à Lista</button>
+  </div>
+
+  <div class="panel">
+    <input type="text" id="searchInput" placeholder="Pesquisar por nome..." onkeyup="renderList()">
+    <select id="filterType" onchange="renderList()">
+      <option value="">Todos os Tipos</option>
+      <option value="Akuma no Mi">Akuma no Mi</option>
+      <option value="Ilha">Ilha</option>
+    </select>
+    <select id="filterSubtype" onchange="renderList()">
+      <option value="">Todos os Sub-tipos</option>
+      <option value="Paramecia">Paramecia</option>
+      <option value="Paramecia Especial">Paramecia Especial</option>
+      <option value="Logia">Logia</option>
+      <option value="Zoan">Zoan</option>
+      <option value="Zoan Ancestral">Zoan Ancestral</option>
+      <option value="Zoan Mítica">Zoan Mítica</option>
+    </select>
+    <button onclick="sortear()">Sortear Itens</button>
+  </div>
+
+  <div id="sorteioResult"></div>
+
+  <ul id="itemList"></ul>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
