@@ -61,7 +61,6 @@ button:hover {
   background-color: #ef4444;
   padding: 8px 12px;
   font-size: 12px;
-  margin-left: 10px;
 }
 .btn-delete:hover {
   background-color: #dc2626;
@@ -77,15 +76,34 @@ li {
   border: 1px solid #3a3a3a;
   border-radius: 8px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 li:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  border-color: #555;
 }
+
+.color-paramecia { border-left: 6px solid #ff7979; }
+.color-logia { border-left: 6px solid #7ed6df; }
+.color-zoan { border-left: 6px solid #f9ca24; }
+.color-ilha { border-left: 6px solid #badc58; }
+
+.ocupada-label {
+  margin-left: auto;
+  margin-right: 15px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #f39c12;
+  cursor: pointer;
+}
+.ocupada-label input {
+  cursor: pointer;
+}
+
 #sorteioResult {
   margin-top: 25px;
   padding: 20px;
@@ -103,9 +121,9 @@ li:hover {
 #sorteioResult ul li {
   background: #2a3441;
   border-color: #3b4c63;
+  border-left: none;
 }
 #sorteioResult ul li:hover {
   transform: none;
   box-shadow: none;
-  border-color: #3b4c63;
 }

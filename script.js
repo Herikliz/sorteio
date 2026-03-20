@@ -1,110 +1,147 @@
-const defaultData = [
-  { id: 1, name: "Fruta do Crescimento", type: "Akuma no Mi", subtype: "Paramecia" },
-  { id: 2, name: "Fruta do Chicote", type: "Akuma no Mi", subtype: "Paramecia" },
-  { id: 3, name: "Sandy", type: "Ilha", subtype: "" },
-  { id: 4, name: "Sabaody", type: "Ilha", subtype: "" }
-];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-let items = JSON.parse(localStorage.getItem('savedItemsList'));
+const firebaseConfig = {
+  apiKey: "AIzaSyDG9zDcphqyTfXXZBWc0-uRV74eeie_tEE",
+  authDomain: "new-seas.firebaseapp.com",
+  projectId: "new-seas",
+  storageBucket: "new-seas.firebasestorage.app",
+  messagingSenderId: "551983006255",
+  appId: "1:551983006255:web:29dae15ad04dabff7afcda"
+};
 
-if (!items) {
-  items = defaultData;
-  saveItems();
-}
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const colRef = collection(db, "lista_one_piece_db");
 
-function saveItems() {
-  localStorage.setItem('savedItemsList', JSON.stringify(items));
-}
+let items = [];
 
-function toggleSubtype() {
-  const type = document.getElementById('newType').value;
-  const subtypeSelect = document.getElementById('newSubtype');
-  if (type === 'Ilha') {
-    subtypeSelect.style.display = 'none';
-    subtypeSelect.value = '';
+const newType = document.getElementById('newType');
+const newSubtype = document.getElementById('newSubtype');
+const newName = document.getElementById('newName');
+const searchInput = document.getElementById('searchInput');
+const filterCategory = document.getElementById('filterCategory');
+const itemList = document.getElementById('itemList');
+const sorteioResult = document.getElementById('sorteioResult');
+
+function updateSubtypes() {
+  newSubtype.innerHTML = '';
+  if (newType.value === 'Akuma no Mi') {
+    ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
+      newSubtype.add(new Option(s, s));
+    });
   } else {
-    subtypeSelect.style.display = 'inline-block';
-    subtypeSelect.value = 'Paramecia';
+    ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
+      newSubtype.add(new Option(s, s));
+    });
   }
 }
 
-function addItem() {
-  const name = document.getElementById('newName').value.trim();
-  const type = document.getElementById('newType').value;
-  const subtype = document.getElementById('newSubtype').value;
+newType.addEventListener('change', updateSubtypes);
+updateSubtypes();
 
-  if (!name) return;
+document.getElementById('addBtn').addEventListener('click', async () => {
+  const nameVal = newName.value.trim();
+  if (!nameVal) return;
+  await addDoc(colRef, {
+    name: nameVal,
+    type: newType.value,
+    subtype: newSubtype.value,
+    ocupada: false
+  });
+  newName.value = '';
+});
 
-  const newItem = {
-    id: Date.now(),
-    name,
-    type,
-    subtype
-  };
-
-  items.push(newItem);
-  saveItems();
-  document.getElementById('newName').value = '';
+onSnapshot(colRef, (snapshot) => {
+  items = [];
+  snapshot.forEach(documento => {
+    items.push({ id: documento.id, ...documento.data() });
+  });
   renderList();
-}
-
-function removeItem(id) {
-  items = items.filter(item => item.id !== id);
-  saveItems();
-  renderList();
-}
+});
 
 function renderList() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const fType = document.getElementById('filterType').value;
-  const fSubtype = document.getElementById('filterSubtype').value;
-  const listEl = document.getElementById('itemList');
+  itemList.innerHTML = '';
+  const search = searchInput.value.toLowerCase();
+  const cat = filterCategory.value;
 
-  listEl.innerHTML = '';
-
-  let filtered = items.filter(item => {
+  const filtered = items.filter(item => {
     const matchSearch = item.name.toLowerCase().includes(search);
-    const matchType = fType === "" || item.type === fType;
-    const matchSubtype = fSubtype === "" || item.subtype === fSubtype;
-    return matchSearch && matchType && matchSubtype;
+    let matchCat = false;
+    
+    if (cat === 'Paramecias' && item.type === 'Akuma no Mi' && item.subtype.includes('Paramecia')) matchCat = true;
+    if (cat === 'Logias' && item.type === 'Akuma no Mi' && item.subtype === 'Logia') matchCat = true;
+    if (cat === 'Zoans' && item.type === 'Akuma no Mi' && item.subtype.includes('Zoan')) matchCat = true;
+    if (cat === 'Ilhas' && item.type === 'Ilha') matchCat = true;
+
+    return matchSearch && matchCat;
   });
 
   filtered.forEach(item => {
     const li = document.createElement('li');
     
-    const textSpan = document.createElement('span');
-    let content = `${item.name} - ${item.type}`;
-    if (item.subtype) {
-      content += ` (${item.subtype})`;
+    if (item.type === 'Ilha') {
+      li.classList.add('color-ilha');
+    } else if (item.subtype.includes('Paramecia')) {
+      li.classList.add('color-paramecia');
+    } else if (item.subtype === 'Logia') {
+      li.classList.add('color-logia');
+    } else if (item.subtype.includes('Zoan')) {
+      li.classList.add('color-zoan');
     }
-    textSpan.textContent = content;
-    
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Remover';
-    deleteBtn.className = 'btn-delete';
-    deleteBtn.onclick = () => removeItem(item.id);
 
-    li.appendChild(textSpan);
-    li.appendChild(deleteBtn);
-    listEl.appendChild(li);
+    const span = document.createElement('span');
+    span.textContent = `${item.name} (${item.subtype})`;
+    li.appendChild(span);
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Remover';
+    delBtn.className = 'btn-delete';
+    
+    if (item.type === 'Akuma no Mi') {
+      const label = document.createElement('label');
+      label.className = 'ocupada-label';
+      
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = item.ocupada;
+      cb.addEventListener('change', async () => {
+        const docRef = doc(db, "lista_one_piece_db", item.id);
+        await updateDoc(docRef, { ocupada: cb.checked });
+      });
+      
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode('Ocupada'));
+      li.appendChild(label);
+    } else {
+      delBtn.style.marginLeft = 'auto';
+    }
+
+    delBtn.addEventListener('click', async () => {
+      await deleteDoc(doc(db, "lista_one_piece_db", item.id));
+    });
+    li.appendChild(delBtn);
+
+    itemList.appendChild(li);
   });
 }
 
-function sortear() {
-  const resultEl = document.getElementById('sorteioResult');
-  resultEl.innerHTML = '';
-  resultEl.style.display = 'none';
+searchInput.addEventListener('keyup', renderList);
+filterCategory.addEventListener('change', renderList);
+
+document.getElementById('sortearBtn').addEventListener('click', () => {
+  sorteioResult.innerHTML = '';
+  sorteioResult.style.display = 'none';
 
   let qtdAkuma = prompt("Quantas Akuma no Mi deseja sortear?");
   if (qtdAkuma === null) return;
-  
   let qtdIlhas = prompt("Quantas Ilhas deseja sortear?");
   if (qtdIlhas === null) return;
 
   qtdAkuma = parseInt(qtdAkuma) || 0;
   qtdIlhas = parseInt(qtdIlhas) || 0;
 
-  let akumas = items.filter(i => i.type === 'Akuma no Mi');
+  let akumas = items.filter(i => i.type === 'Akuma no Mi' && !i.ocupada);
   let ilhas = items.filter(i => i.type === 'Ilha');
 
   akumas = akumas.sort(() => 0.5 - Math.random()).slice(0, qtdAkuma);
@@ -113,27 +150,17 @@ function sortear() {
   const sorteados = [...akumas, ...ilhas];
 
   if (sorteados.length > 0) {
-    resultEl.style.display = 'block';
+    sorteioResult.style.display = 'block';
     const h3 = document.createElement('h3');
     h3.textContent = "Resultado do Sorteio:";
-    h3.style.marginTop = '0';
-    resultEl.appendChild(h3);
+    sorteioResult.appendChild(h3);
     
     const ul = document.createElement('ul');
     sorteados.forEach(item => {
       const li = document.createElement('li');
-      let content = `${item.name} - ${item.type}`;
-      if (item.subtype) {
-        content += ` (${item.subtype})`;
-      }
-      li.textContent = content;
+      li.textContent = `${item.name} (${item.subtype})`;
       ul.appendChild(li);
     });
-    resultEl.appendChild(ul);
+    sorteioResult.appendChild(ul);
   }
-}
-
-window.onload = () => {
-  toggleSubtype();
-  renderList();
-};
+});

@@ -12,38 +12,23 @@
 
   <div class="panel">
     <input type="text" id="newName" placeholder="Nome do Item">
-    <select id="newType" onchange="toggleSubtype()">
+    <select id="newType">
       <option value="Akuma no Mi">Akuma no Mi</option>
       <option value="Ilha">Ilha</option>
     </select>
-    <select id="newSubtype">
-      <option value="Paramecia">Paramecia</option>
-      <option value="Paramecia Especial">Paramecia Especial</option>
-      <option value="Logia">Logia</option>
-      <option value="Zoan">Zoan</option>
-      <option value="Zoan Ancestral">Zoan Ancestral</option>
-      <option value="Zoan Mítica">Zoan Mítica</option>
-    </select>
-    <button onclick="addItem()">Adicionar à Lista</button>
+    <select id="newSubtype"></select>
+    <button id="addBtn">Adicionar à Lista</button>
   </div>
 
   <div class="panel">
-    <input type="text" id="searchInput" placeholder="Pesquisar por nome..." onkeyup="renderList()">
-    <select id="filterType" onchange="renderList()">
-      <option value="">Todos os Tipos</option>
-      <option value="Akuma no Mi">Akuma no Mi</option>
-      <option value="Ilha">Ilha</option>
+    <input type="text" id="searchInput" placeholder="Pesquisar por nome...">
+    <select id="filterCategory">
+      <option value="Paramecias">Paramecias</option>
+      <option value="Logias">Logias</option>
+      <option value="Zoans">Zoans</option>
+      <option value="Ilhas">Ilhas</option>
     </select>
-    <select id="filterSubtype" onchange="renderList()">
-      <option value="">Todos os Sub-tipos</option>
-      <option value="Paramecia">Paramecia</option>
-      <option value="Paramecia Especial">Paramecia Especial</option>
-      <option value="Logia">Logia</option>
-      <option value="Zoan">Zoan</option>
-      <option value="Zoan Ancestral">Zoan Ancestral</option>
-      <option value="Zoan Mítica">Zoan Mítica</option>
-    </select>
-    <button onclick="sortear()">Sortear Itens</button>
+    <button id="sortearBtn">Sortear Itens</button>
   </div>
 
   <div id="sorteioResult"></div>
@@ -51,6 +36,6 @@
   <ul id="itemList"></ul>
 </div>
 
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
