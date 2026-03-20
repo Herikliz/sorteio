@@ -52,13 +52,64 @@ document.getElementById('addBtn').addEventListener('click', async () => {
   newName.value = '';
 });
 
+const pedidosArea = document.getElementById('pedidosArea');
+
 onSnapshot(colRef, (snapshot) => {
   items = [];
   snapshot.forEach(documento => {
     items.push({ id: documento.id, ...documento.data() });
   });
   renderList();
+  renderPedidos();
 });
+
+function renderPedidos() {
+  pedidosArea.innerHTML = '';
+  const pendentes = items.filter(i => i.pedidoPor && !i.ocupada);
+  
+  if (pendentes.length > 0) {
+    const box = document.createElement('div');
+    box.style.background = '#3b2a1a';
+    box.style.padding = '15px';
+    box.style.marginBottom = '20px';
+    box.style.borderRadius = '8px';
+    box.style.borderLeft = '5px solid #f39c12';
+    
+    const titulo = document.createElement('h3');
+    titulo.textContent = 'Pedidos Pendentes';
+    titulo.style.marginTop = '0';
+    box.appendChild(titulo);
+    
+    pendentes.forEach(item => {
+      const p = document.createElement('p');
+      p.textContent = `Personagem "${item.pedidoNome}" selecionou a fruta ${item.name} (${item.subtype}).`;
+      
+      const btnAprovar = document.createElement('button');
+      btnAprovar.textContent = 'Aprovar';
+      btnAprovar.style.backgroundColor = '#27ae60';
+      btnAprovar.style.marginRight = '10px';
+      btnAprovar.onclick = async () => {
+        await updateDoc(doc(db, "lista_one_piece_db", item.id), { ocupada: true, donoId: item.pedidoPor });
+      };
+      
+      const btnNegar = document.createElement('button');
+      btnNegar.textContent = 'Negar';
+      btnNegar.style.backgroundColor = '#c0392b';
+      btnNegar.onclick = async () => {
+        await updateDoc(doc(db, "fichas_op", item.pedidoPor), { "info.akumaNome": "", "info.akumaId": "" });
+        await updateDoc(doc(db, "lista_one_piece_db", item.id), { pedidoPor: null, pedidoNome: null });
+      };
+      
+      p.appendChild(document.createElement('br'));
+      p.appendChild(document.createElement('br'));
+      p.appendChild(btnAprovar);
+      p.appendChild(btnNegar);
+      box.appendChild(p);
+    });
+    
+    pedidosArea.appendChild(box);
+  }
+}
 
 function renderList() {
   itemList.innerHTML = '';
