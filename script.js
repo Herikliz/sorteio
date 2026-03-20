@@ -52,12 +52,16 @@ document.getElementById('addBtn').addEventListener('click', async () => {
   for (let i = 0; i < names.length; i++) {
     const nameVal = names[i].trim();
     if (!nameVal) continue;
+
+    const jaExiste = items.find(item => item.name.toLowerCase() === nameVal.toLowerCase() && item.type === newType.value);
+    if (jaExiste) continue;
     
     let dataToSave = {
       name: nameVal,
       type: newType.value,
       subtype: newSubtype.value,
-      ocupada: false
+      ocupada: false,
+      criadoEm: Date.now()
     };
     
     if (newType.value === 'Ilha') {
@@ -65,6 +69,7 @@ document.getElementById('addBtn').addEventListener('click', async () => {
     }
 
     await addDoc(colRef, dataToSave);
+    items.push(dataToSave);
   }
 
   newName.value = '';
@@ -73,10 +78,27 @@ document.getElementById('addBtn').addEventListener('click', async () => {
 const pedidosArea = document.getElementById('pedidosArea');
 
 onSnapshot(colRef, (snapshot) => {
-  items = [];
+  let tempItems = [];
   snapshot.forEach(documento => {
-    items.push({ id: documento.id, ...documento.data() });
+    tempItems.push({ id: documento.id, ...documento.data() });
   });
+
+  tempItems.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
+
+  items = [];
+  const nomesVistos = new Set();
+
+  tempItems.forEach(item => {
+    const chave = item.name.toLowerCase() + "_" + item.type;
+    
+    if (nomesVistos.has(chave)) {
+      deleteDoc(doc(db, "lista_one_piece_db", item.id));
+    } else {
+      nomesVistos.add(chave);
+      items.push(item);
+    }
+  });
+
   renderList();
   renderPedidos();
 });
