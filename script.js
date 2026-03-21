@@ -25,6 +25,22 @@ const filterCategory = document.getElementById('filterCategory');
 const itemList = document.getElementById('itemList');
 const sorteioResult = document.getElementById('sorteioResult');
 
+async function migrarTodosParaIdsDeNome() {
+  const confirmacao = confirm("Deseja transformar o ID de todos os itens atuais em seus respectivos nomes? Isso apagará os IDs antigos.");
+  if (!confirmacao) return;
+
+  for (let item of items) {
+    const novoId = item.name.trim().replace(/\//g, '-');
+    if (item.id !== novoId) {
+      let dataToCopy = { ...item };
+      delete dataToCopy.id;
+      await setDoc(doc(db, "lista_one_piece_db", novoId), dataToCopy);
+      await deleteDoc(doc(db, "lista_one_piece_db", item.id));
+    }
+  }
+  alert("Migração concluída!");
+}
+
 function updateSubtypes() {
   newSubtype.innerHTML = '';
   if (newType.value === 'Akuma no Mi') {
@@ -272,9 +288,10 @@ function renderList() {
       const saveBtn = document.createElement('button');
       saveBtn.textContent = 'Salvar';
       saveBtn.style.backgroundColor = '#27ae60';
-      saveBtn.addEventListener('click', async () => {
+      saveBtn.onclick = async () => {
         const novoNome = editName.value.trim();
         const selectedEditSubtypes = Array.from(editSubtype.selectedOptions).map(opt => opt.value).join(', ');
+        const itemIdOriginal = item.id;
         
         let dataToUpdate = { ...item };
         delete dataToUpdate.id;
@@ -287,17 +304,23 @@ function renderList() {
           dataToUpdate.mar = editSea.value;
         } else {
           dataToUpdate.mar = null;
+          delete dataToUpdate.mar;
         }
 
         const novoId = novoNome.replace(/\//g, '-');
         
-        if (novoId !== item.id) {
-          await setDoc(doc(db, "lista_one_piece_db", novoId), dataToUpdate);
-          await deleteDoc(doc(db, "lista_one_piece_db", item.id));
-        } else {
-          await updateDoc(doc(db, "lista_one_piece_db", item.id), dataToUpdate);
+        try {
+          if (novoId !== itemIdOriginal) {
+            await setDoc(doc(db, "lista_one_piece_db", novoId), dataToUpdate);
+            await deleteDoc(doc(db, "lista_one_piece_db", itemIdOriginal));
+          } else {
+            await updateDoc(doc(db, "lista_one_piece_db", itemIdOriginal), dataToUpdate);
+          }
+          renderList();
+        } catch (e) {
+          console.error("Erro ao salvar: ", e);
         }
-      });
+      };
 
       const cancelBtn = document.createElement('button');
       cancelBtn.textContent = 'Cancelar';
