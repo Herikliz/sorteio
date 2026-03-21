@@ -29,16 +29,40 @@ async function migrarTodosParaIdsDeNome() {
   const confirmacao = confirm("Deseja transformar o ID de todos os itens atuais em seus respectivos nomes? Isso apagará os IDs antigos.");
   if (!confirmacao) return;
 
-  for (let item of items) {
-    const novoId = item.name.trim().replace(/\//g, '-');
+  const progressContainer = document.getElementById('progressContainer');
+  const progressBar = document.getElementById('progressBar');
+  if (progressContainer) progressContainer.style.display = 'block';
+
+  let total = items.length;
+  let concluidos = 0;
+
+  for (let i = 0; i < items.length; i++) {
+    let item = items[i];
+    let novoId = item.name.trim().replace(/\//g, '-');
+    
     if (item.id !== novoId) {
       let dataToCopy = { ...item };
       delete dataToCopy.id;
       await setDoc(doc(db, "lista_one_piece_db", novoId), dataToCopy);
       await deleteDoc(doc(db, "lista_one_piece_db", item.id));
     }
+    
+    concluidos++;
+    if (progressBar) {
+      let perc = Math.round((concluidos / total) * 100);
+      progressBar.style.width = perc + '%';
+      progressBar.textContent = perc + '%';
+    }
   }
-  alert("Migração concluída!");
+
+  setTimeout(() => {
+    if (progressContainer) progressContainer.style.display = 'none';
+    if (progressBar) {
+      progressBar.style.width = '0%';
+      progressBar.textContent = '0%';
+    }
+    alert("Migração concluída!");
+  }, 500);
 }
 
 function updateSubtypes() {
@@ -293,18 +317,19 @@ function renderList() {
         const selectedEditSubtypes = Array.from(editSubtype.selectedOptions).map(opt => opt.value).join(', ');
         const itemIdOriginal = item.id;
         
-        let dataToUpdate = { ...item };
-        delete dataToUpdate.id;
+        let dataToUpdate = {
+          name: novoNome,
+          type: editType.value,
+          subtype: selectedEditSubtypes,
+          ocupada: item.ocupada !== undefined ? item.ocupada : false
+        };
         
-        dataToUpdate.name = novoNome;
-        dataToUpdate.type = editType.value;
-        dataToUpdate.subtype = selectedEditSubtypes;
+        if (item.criadoEm) dataToUpdate.criadoEm = item.criadoEm;
+        if (item.pedidoPor) dataToUpdate.pedidoPor = item.pedidoPor;
+        if (item.pedidoNome) dataToUpdate.pedidoNome = item.pedidoNome;
         
         if (editType.value === 'Ilha') {
           dataToUpdate.mar = editSea.value;
-        } else {
-          dataToUpdate.mar = null;
-          delete dataToUpdate.mar;
         }
 
         const novoId = novoNome.replace(/\//g, '-');
@@ -316,9 +341,8 @@ function renderList() {
           } else {
             await updateDoc(doc(db, "lista_one_piece_db", itemIdOriginal), dataToUpdate);
           }
-          renderList();
         } catch (e) {
-          console.error("Erro ao salvar: ", e);
+          alert("Erro ao salvar: " + e.message);
         }
       };
 
