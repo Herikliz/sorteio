@@ -25,50 +25,6 @@ const filterCategory = document.getElementById('filterCategory');
 const itemList = document.getElementById('itemList');
 const sorteioResult = document.getElementById('sorteioResult');
 
-window.migrarTodosParaIdsDeNome = async function() {
-  const confirmacao = confirm("Deseja transformar o ID de todos os itens atuais em seus respectivos nomes? Isso apagará os IDs antigos.");
-  if (!confirmacao) return;
-
-  const progressContainer = document.getElementById('progressContainer');
-  const progressBar = document.getElementById('progressBar');
-  if (progressContainer) progressContainer.style.display = 'block';
-
-  let total = items.length;
-  let concluidos = 0;
-
-  for (let i = 0; i < items.length; i++) {
-    let item = items[i];
-    let novoId = item.name.trim().replace(/\//g, '-');
-    
-    try {
-      if (item.id !== novoId) {
-        let dataToCopy = { ...item };
-        delete dataToCopy.id;
-        await setDoc(doc(db, "lista_one_piece_db", novoId), dataToCopy);
-        await deleteDoc(doc(db, "lista_one_piece_db", item.id));
-      }
-    } catch (e) {
-      alert("Erro ao migrar " + item.name + ": " + e.message);
-    }
-    
-    concluidos++;
-    if (progressBar) {
-      let perc = Math.round((concluidos / total) * 100);
-      progressBar.style.width = perc + '%';
-      progressBar.textContent = perc + '%';
-    }
-  }
-
-  setTimeout(() => {
-    if (progressContainer) progressContainer.style.display = 'none';
-    if (progressBar) {
-      progressBar.style.width = '0%';
-      progressBar.textContent = '0%';
-    }
-    alert("Migração concluída!");
-  }, 500);
-}
-
 function updateSubtypes() {
   newSubtype.innerHTML = '';
   if (newType.value === 'Akuma no Mi') {
@@ -117,8 +73,9 @@ document.getElementById('addBtn').addEventListener('click', async () => {
       dataToSave.mar = newSea.value;
     }
 
-    await addDoc(colRef, dataToSave);
-    items.push(dataToSave);
+    const docId = nameVal.replace(/\//g, '-');
+    await setDoc(doc(db, "lista_one_piece_db", docId), dataToSave);
+    items.push({ id: docId, ...dataToSave });
   }
 
   newName.value = '';
