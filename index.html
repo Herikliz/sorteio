@@ -17,6 +17,7 @@
       <option value="Ilha">Ilha</option>
     </select>
     <select id="newSubtype"></select>
+    <input type="text" id="newPrice" placeholder="Preço (Mín: 100.000.000)" style="width: 170px;">
     <select id="newSea" style="display: none;">
       <option value="East Blue">East Blue</option>
       <option value="West Blue">West Blue</option>
@@ -54,6 +55,11 @@
       <div style="flex:1; min-width:200px;">
         <h3 style="color:#f39c12;">Akuma no Mi</h3>
         <label>Quantidade: <input type="number" id="sorteioQtdAkuma" value="0" min="0" style="width:60px;"></label>
+        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
+          <strong>Faixa de Preço:</strong><br>
+          <label>Mín: <input type="text" id="sorteioMinPreco" value="100.000.000" style="width:110px;"></label><br>
+          <label>Máx: <input type="text" id="sorteioMaxPreco" value="100.000.000" style="width:110px;"></label>
+        </div>
         <div style="margin-top:10px; font-size:14px; line-height:1.6;">
           <strong>Subtipos:</strong><br>
           <label><input type="checkbox" class="chk-akuma-sub" value="Paramecia" checked> Paramecia</label><br>

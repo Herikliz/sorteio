@@ -20,7 +20,18 @@ const newType = document.getElementById('newType');
 const newSubtype = document.getElementById('newSubtype');
 const newSea = document.getElementById('newSea');
 const newName = document.getElementById('newName');
+const newPrice = document.getElementById('newPrice');
 const searchInput = document.getElementById('searchInput');
+
+function formatCurrency(val) {
+  let num = parseInt(val.replace(/\D/g, ''), 10);
+  if (isNaN(num)) return '';
+  return num.toLocaleString('pt-BR');
+}
+
+newPrice.addEventListener('input', (e) => {
+  e.target.value = formatCurrency(e.target.value);
+});
 const filterCategory = document.getElementById('filterCategory');
 const itemList = document.getElementById('itemList');
 const sorteioResult = document.getElementById('sorteioResult');
@@ -29,6 +40,8 @@ function updateSubtypes() {
   newSubtype.innerHTML = '';
   if (newType.value === 'Akuma no Mi') {
     newSea.style.display = 'none';
+    newPrice.style.display = 'inline-block';
+    if (!newPrice.value) newPrice.value = "100.000.000";
     newSubtype.multiple = false;
     newSubtype.style.height = 'auto';
     ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
@@ -36,6 +49,7 @@ function updateSubtypes() {
     });
   } else {
     newSea.style.display = 'inline-block';
+    newPrice.style.display = 'none';
     newSubtype.multiple = true;
     newSubtype.style.height = '80px';
     ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
@@ -69,7 +83,11 @@ document.getElementById('addBtn').addEventListener('click', async () => {
       criadoEm: Date.now()
     };
     
-    if (newType.value === 'Ilha') {
+    if (newType.value === 'Akuma no Mi') {
+      let p = parseInt(newPrice.value.replace(/\D/g, '')) || 100000000;
+      if (p < 100000000) p = 100000000;
+      dataToSave.preco = p;
+    } else if (newType.value === 'Ilha') {
       dataToSave.mar = newSea.value;
     }
 
@@ -195,6 +213,8 @@ function renderList() {
     let itemText = `${item.name} (${item.subtype})`;
     if (item.type === 'Ilha' && item.mar) {
       itemText += ` - ${item.mar}`;
+    } else if (item.type === 'Akuma no Mi') {
+      itemText += ` - ฿ ${(item.preco || 100000000).toLocaleString('pt-BR')}`;
     }
     span.textContent = itemText;
     li.appendChild(span);
@@ -243,6 +263,14 @@ function renderList() {
 
       const editSubtype = document.createElement('select');
 
+      const editPrice = document.createElement('input');
+      editPrice.type = 'text';
+      editPrice.value = (item.preco || 100000000).toLocaleString('pt-BR');
+      editPrice.style.width = '120px';
+      editPrice.addEventListener('input', (e) => {
+        e.target.value = formatCurrency(e.target.value);
+      });
+
       const editSea = document.createElement('select');
       ['East Blue', 'West Blue', 'North Blue', 'South Blue', 'Paraíso', 'Novo Mundo', 'Calm Belt', 'Localização Desconhecida'].forEach(s => {
         editSea.add(new Option(s, s, false, s === item.mar));
@@ -253,6 +281,7 @@ function renderList() {
         const currentSubtypes = item.subtype ? item.subtype.split(', ') : [];
         if (editType.value === 'Akuma no Mi') {
           editSea.style.display = 'none';
+          editPrice.style.display = 'inline-block';
           editSubtype.multiple = false;
           editSubtype.style.height = 'auto';
           ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
@@ -260,6 +289,7 @@ function renderList() {
           });
         } else {
           editSea.style.display = 'inline-block';
+          editPrice.style.display = 'none';
           editSubtype.multiple = true;
           editSubtype.style.height = '80px';
           ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
@@ -289,7 +319,11 @@ function renderList() {
         if (item.pedidoPor) dataToUpdate.pedidoPor = item.pedidoPor;
         if (item.pedidoNome) dataToUpdate.pedidoNome = item.pedidoNome;
         
-        if (editType.value === 'Ilha') {
+        if (editType.value === 'Akuma no Mi') {
+          let p = parseInt(editPrice.value.replace(/\D/g, '')) || 100000000;
+          if (p < 100000000) p = 100000000;
+          dataToUpdate.preco = p;
+        } else if (editType.value === 'Ilha') {
           dataToUpdate.mar = editSea.value;
         }
 
@@ -312,7 +346,7 @@ function renderList() {
       cancelBtn.style.backgroundColor = '#7f8c8d';
       cancelBtn.addEventListener('click', () => renderList());
 
-      li.append(editName, editType, editSubtype, editSea, saveBtn, cancelBtn);
+      li.append(editName, editType, editSubtype, editPrice, editSea, saveBtn, cancelBtn);
     });
 
     delBtn.addEventListener('click', async () => {
@@ -330,8 +364,29 @@ searchInput.addEventListener('keyup', renderList);
 filterCategory.addEventListener('change', renderList);
 
 const sorteioModal = document.getElementById('sorteioModal');
+const sorteioMinPreco = document.getElementById('sorteioMinPreco');
+const sorteioMaxPreco = document.getElementById('sorteioMaxPreco');
+
+function getMaxAkumaPrice() {
+  const akumas = items.filter(i => i.type === 'Akuma no Mi');
+  if (akumas.length === 0) return 100000000;
+  return Math.max(...akumas.map(a => a.preco || 100000000));
+}
+
+sorteioMinPreco.addEventListener('input', (e) => {
+  e.target.value = formatCurrency(e.target.value);
+});
+
+sorteioMaxPreco.addEventListener('input', (e) => {
+  let raw = parseInt(e.target.value.replace(/\D/g, '')) || 0;
+  let maxAllowed = getMaxAkumaPrice();
+  if (raw > maxAllowed) raw = maxAllowed;
+  e.target.value = raw.toLocaleString('pt-BR');
+});
 
 document.getElementById('sortearBtn').addEventListener('click', () => {
+  let maxAllowed = getMaxAkumaPrice();
+  sorteioMaxPreco.value = maxAllowed.toLocaleString('pt-BR');
   sorteioModal.style.display = 'flex';
 });
 
@@ -347,12 +402,17 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
   let qtdAkuma = parseInt(document.getElementById('sorteioQtdAkuma').value) || 0;
   let qtdIlhas = parseInt(document.getElementById('sorteioQtdIlha').value) || 0;
 
+  let minPreco = parseInt(sorteioMinPreco.value.replace(/\D/g, '')) || 100000000;
+  let maxPreco = parseInt(sorteioMaxPreco.value.replace(/\D/g, '')) || 100000000;
+
   let subAkumaAllowed = Array.from(document.querySelectorAll('.chk-akuma-sub:checked')).map(cb => cb.value);
   let subIlhaAllowed = Array.from(document.querySelectorAll('.chk-ilha-sub:checked')).map(cb => cb.value);
   let marIlhaAllowed = Array.from(document.querySelectorAll('.chk-ilha-mar:checked')).map(cb => cb.value);
 
   let akumas = items.filter(i => {
     if (i.type !== 'Akuma no Mi' || i.ocupada) return false;
+    let preco = i.preco || 100000000;
+    if (preco < minPreco || preco > maxPreco) return false;
     return subAkumaAllowed.includes(i.subtype);
   });
 
