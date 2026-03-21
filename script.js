@@ -273,18 +273,30 @@ function renderList() {
       saveBtn.textContent = 'Salvar';
       saveBtn.style.backgroundColor = '#27ae60';
       saveBtn.addEventListener('click', async () => {
+        const novoNome = editName.value.trim();
         const selectedEditSubtypes = Array.from(editSubtype.selectedOptions).map(opt => opt.value).join(', ');
-        let dataToUpdate = {
-          name: editName.value.trim(),
-          type: editType.value,
-          subtype: selectedEditSubtypes
-        };
+        
+        let dataToUpdate = { ...item };
+        delete dataToUpdate.id;
+        
+        dataToUpdate.name = novoNome;
+        dataToUpdate.type = editType.value;
+        dataToUpdate.subtype = selectedEditSubtypes;
+        
         if (editType.value === 'Ilha') {
           dataToUpdate.mar = editSea.value;
         } else {
           dataToUpdate.mar = null;
         }
-        await updateDoc(doc(db, "lista_one_piece_db", item.id), dataToUpdate);
+
+        const novoId = novoNome.replace(/\//g, '-');
+        
+        if (novoId !== item.id) {
+          await setDoc(doc(db, "lista_one_piece_db", novoId), dataToUpdate);
+          await deleteDoc(doc(db, "lista_one_piece_db", item.id));
+        } else {
+          await updateDoc(doc(db, "lista_one_piece_db", item.id), dataToUpdate);
+        }
       });
 
       const cancelBtn = document.createElement('button');
