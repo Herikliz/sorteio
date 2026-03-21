@@ -46,6 +46,56 @@
   <ul id="itemList"></ul>
 </div>
 
+<div id="sorteioModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:#252526; padding:20px; border-radius:8px; border:1px solid #444; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; color:#fff;">
+    <h2 style="margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;">Configurações do Sorteio</h2>
+    
+    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:200px;">
+        <h3 style="color:#f39c12;">Akuma no Mi</h3>
+        <label>Quantidade: <input type="number" id="sorteioQtdAkuma" value="0" min="0" style="width:60px;"></label>
+        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
+          <strong>Subtipos:</strong><br>
+          <label><input type="checkbox" class="chk-akuma-sub" value="Paramecia" checked> Paramecia</label><br>
+          <label><input type="checkbox" class="chk-akuma-sub" value="Paramecia Especial" checked> Paramecia Especial</label><br>
+          <label><input type="checkbox" class="chk-akuma-sub" value="Logia" checked> Logia</label><br>
+          <label><input type="checkbox" class="chk-akuma-sub" value="Zoan" checked> Zoan</label><br>
+          <label><input type="checkbox" class="chk-akuma-sub" value="Zoan Ancestral" checked> Zoan Ancestral</label><br>
+          <label><input type="checkbox" class="chk-akuma-sub" value="Zoan Mítica" checked> Zoan Mítica</label>
+        </div>
+      </div>
+
+      <div style="flex:1; min-width:200px;">
+        <h3 style="color:#27ae60;">Ilhas</h3>
+        <label>Quantidade: <input type="number" id="sorteioQtdIlha" value="0" min="0" style="width:60px;"></label>
+        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
+          <strong>Organizações:</strong><br>
+          <label><input type="checkbox" class="chk-ilha-sub" value="Pirata" checked> Pirata</label><br>
+          <label><input type="checkbox" class="chk-ilha-sub" value="Marinha/Governo Mundial" checked> Marinha/Gov.</label><br>
+          <label><input type="checkbox" class="chk-ilha-sub" value="Independente" checked> Independente</label><br>
+          <label><input type="checkbox" class="chk-ilha-sub" value="Despovoada" checked> Despovoada</label>
+        </div>
+        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
+          <strong>Mares:</strong><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="East Blue" checked> East Blue</label><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="West Blue" checked> West Blue</label><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="North Blue" checked> North Blue</label><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="South Blue" checked> South Blue</label><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="Paraíso" checked> Paraíso</label><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="Novo Mundo" checked> Novo Mundo</label><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="Calm Belt" checked> Calm Belt</label><br>
+          <label><input type="checkbox" class="chk-ilha-mar" value="Localização Desconhecida" checked> Desconhecida</label>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px; text-align:right; border-top:1px solid #444; padding-top:15px;">
+      <button id="btnConfirmarSorteio" style="background:#27ae60; color:#fff; padding:10px 20px; border:none; border-radius:4px; cursor:pointer;">Sortear</button>
+      <button id="btnCancelarSorteio" style="background:#c0392b; color:#fff; padding:10px 20px; border:none; border-radius:4px; cursor:pointer; margin-left:10px;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <script type="module" src="script.js"></script>
 </body>
 </html>

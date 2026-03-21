@@ -329,20 +329,44 @@ function renderList() {
 searchInput.addEventListener('keyup', renderList);
 filterCategory.addEventListener('change', renderList);
 
+const sorteioModal = document.getElementById('sorteioModal');
+
 document.getElementById('sortearBtn').addEventListener('click', () => {
+  sorteioModal.style.display = 'flex';
+});
+
+document.getElementById('btnCancelarSorteio').addEventListener('click', () => {
+  sorteioModal.style.display = 'none';
+});
+
+document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
+  sorteioModal.style.display = 'none';
   sorteioResult.innerHTML = '';
   sorteioResult.style.display = 'none';
 
-  let qtdAkuma = prompt("Quantas Akuma no Mi deseja sortear?");
-  if (qtdAkuma === null) return;
-  let qtdIlhas = prompt("Quantas Ilhas deseja sortear?");
-  if (qtdIlhas === null) return;
+  let qtdAkuma = parseInt(document.getElementById('sorteioQtdAkuma').value) || 0;
+  let qtdIlhas = parseInt(document.getElementById('sorteioQtdIlha').value) || 0;
 
-  qtdAkuma = parseInt(qtdAkuma) || 0;
-  qtdIlhas = parseInt(qtdIlhas) || 0;
+  let subAkumaAllowed = Array.from(document.querySelectorAll('.chk-akuma-sub:checked')).map(cb => cb.value);
+  let subIlhaAllowed = Array.from(document.querySelectorAll('.chk-ilha-sub:checked')).map(cb => cb.value);
+  let marIlhaAllowed = Array.from(document.querySelectorAll('.chk-ilha-mar:checked')).map(cb => cb.value);
 
-  let akumas = items.filter(i => i.type === 'Akuma no Mi' && !i.ocupada);
-  let ilhas = items.filter(i => i.type === 'Ilha');
+  let akumas = items.filter(i => {
+    if (i.type !== 'Akuma no Mi' || i.ocupada) return false;
+    return subAkumaAllowed.includes(i.subtype);
+  });
+
+  let ilhas = items.filter(i => {
+    if (i.type !== 'Ilha') return false;
+    let marVal = i.mar || 'Localização Desconhecida';
+    if (!marIlhaAllowed.includes(marVal)) return false;
+    
+    const ilhaSubtypes = i.subtype ? i.subtype.split(', ') : [];
+    const hasAllowedSubtype = ilhaSubtypes.some(sub => subIlhaAllowed.includes(sub));
+    if (ilhaSubtypes.length > 0 && !hasAllowedSubtype) return false;
+    
+    return true;
+  });
 
   akumas = akumas.sort(() => 0.5 - Math.random()).slice(0, qtdAkuma);
   ilhas = ilhas.sort(() => 0.5 - Math.random()).slice(0, qtdIlhas);
@@ -366,5 +390,7 @@ document.getElementById('sortearBtn').addEventListener('click', () => {
       ul.appendChild(li);
     });
     sorteioResult.appendChild(ul);
+  } else {
+    alert("Nenhum item encontrado com os filtros selecionados!");
   }
 });
