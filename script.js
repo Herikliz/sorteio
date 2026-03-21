@@ -25,7 +25,7 @@ const filterCategory = document.getElementById('filterCategory');
 const itemList = document.getElementById('itemList');
 const sorteioResult = document.getElementById('sorteioResult');
 
-async function migrarTodosParaIdsDeNome() {
+window.migrarTodosParaIdsDeNome = async function() {
   const confirmacao = confirm("Deseja transformar o ID de todos os itens atuais em seus respectivos nomes? Isso apagará os IDs antigos.");
   if (!confirmacao) return;
 
@@ -40,11 +40,15 @@ async function migrarTodosParaIdsDeNome() {
     let item = items[i];
     let novoId = item.name.trim().replace(/\//g, '-');
     
-    if (item.id !== novoId) {
-      let dataToCopy = { ...item };
-      delete dataToCopy.id;
-      await setDoc(doc(db, "lista_one_piece_db", novoId), dataToCopy);
-      await deleteDoc(doc(db, "lista_one_piece_db", item.id));
+    try {
+      if (item.id !== novoId) {
+        let dataToCopy = { ...item };
+        delete dataToCopy.id;
+        await setDoc(doc(db, "lista_one_piece_db", novoId), dataToCopy);
+        await deleteDoc(doc(db, "lista_one_piece_db", item.id));
+      }
+    } catch (e) {
+      alert("Erro ao migrar " + item.name + ": " + e.message);
     }
     
     concluidos++;
