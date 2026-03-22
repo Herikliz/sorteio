@@ -237,7 +237,10 @@ function renderList() {
       cb.checked = item.ocupada;
       cb.addEventListener('change', async () => {
         const docRef = doc(db, "lista_one_piece_db", item.id);
-        await updateDoc(docRef, { ocupada: cb.checked });
+        let updateData = { ocupada: cb.checked };
+        if (cb.checked && item.pedidoPor) updateData.donoId = item.pedidoPor;
+        else if (!cb.checked) updateData.donoId = null;
+        await updateDoc(docRef, updateData);
       });
       
       label.appendChild(cb);
@@ -318,6 +321,7 @@ function renderList() {
         if (item.criadoEm) dataToUpdate.criadoEm = item.criadoEm;
         if (item.pedidoPor) dataToUpdate.pedidoPor = item.pedidoPor;
         if (item.pedidoNome) dataToUpdate.pedidoNome = item.pedidoNome;
+        if (item.donoId) dataToUpdate.donoId = item.donoId;
         
         if (editType.value === 'Akuma no Mi') {
           let p = parseInt(editPrice.value.replace(/\D/g, '')) || 100000000;
