@@ -398,6 +398,32 @@ document.getElementById('btnCancelarSorteio').addEventListener('click', () => {
   sorteioModal.style.display = 'none';
 });
 
+document.getElementById('btnExportarFicha').addEventListener('click', () => {
+  let exportText = "// === COLE ISSO NO SCRIPT DA FICHA DO JOGADOR ===\n\n";
+  
+  exportText += "const ilhasFixas = {\n";
+  const mares = ['East Blue', 'West Blue', 'North Blue', 'South Blue', 'Paraíso', 'Novo Mundo', 'Calm Belt', 'Localização Desconhecida'];
+  mares.forEach(mar => {
+    let ilhasDoMar = items.filter(i => i.type === 'Ilha' && i.mar === mar).map(i => `"${i.name}"`);
+    exportText += `  "${mar}": [${ilhasDoMar.join(', ')}],\n`;
+  });
+  exportText += "};\n\n";
+
+  exportText += "const akumasFixas = {\n";
+  const tiposFruta = ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'];
+  tiposFruta.forEach(tipo => {
+    let frutasDoTipo = items.filter(i => i.type === 'Akuma no Mi' && i.subtype === tipo && !i.ocupada).map(i => `"${i.name}"`);
+    exportText += `  "${tipo}": [${frutasDoTipo.join(', ')}],\n`;
+  });
+  exportText += "};\n";
+
+  navigator.clipboard.writeText(exportText).then(() => {
+    alert("Listas copiadas com sucesso! Agora é só colar no código da Ficha do Jogador.");
+  }).catch(err => {
+    alert("Erro ao copiar. Verifique as permissões do navegador.");
+  });
+});
+
 document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
   sorteioModal.style.display = 'none';
   sorteioResult.innerHTML = '';
