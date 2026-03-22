@@ -398,29 +398,23 @@ document.getElementById('btnCancelarSorteio').addEventListener('click', () => {
   sorteioModal.style.display = 'none';
 });
 
-document.getElementById('btnExportarFicha').addEventListener('click', () => {
-  let exportText = "// === COLE ISSO NO SCRIPT DA FICHA DO JOGADOR ===\n\n";
+document.getElementById('btnExportarOcupadas').addEventListener('click', () => {
+  let exportText = "Frutas Ocupadas:\n\n";
+  let ocupadas = items.filter(i => i.type === 'Akuma no Mi' && i.ocupada);
   
-  exportText += "const ilhasFixas = {\n";
-  const mares = ['East Blue', 'West Blue', 'North Blue', 'South Blue', 'Paraíso', 'Novo Mundo', 'Calm Belt', 'Localização Desconhecida'];
-  mares.forEach(mar => {
-    let ilhasDoMar = items.filter(i => i.type === 'Ilha' && i.mar === mar).map(i => `"${i.name}"`);
-    exportText += `  "${mar}": [${ilhasDoMar.join(', ')}],\n`;
+  ocupadas.sort((a, b) => a.name.localeCompare(b.name));
+  
+  ocupadas.forEach(i => {
+    let dono = i.donoId ? i.donoId : "NPC";
+    exportText += `- ${i.name} (${i.subtype}) [Dono: ${dono}]\n`;
   });
-  exportText += "};\n\n";
-
-  exportText += "const akumasFixas = {\n";
-  const tiposFruta = ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'];
-  tiposFruta.forEach(tipo => {
-    let frutasDoTipo = items.filter(i => i.type === 'Akuma no Mi' && i.subtype === tipo && !i.ocupada).map(i => `"${i.name}"`);
-    exportText += `  "${tipo}": [${frutasDoTipo.join(', ')}],\n`;
-  });
-  exportText += "};\n";
-
+  
+  if (ocupadas.length === 0) exportText = "Nenhuma fruta ocupada no momento.";
+  
   navigator.clipboard.writeText(exportText).then(() => {
-    alert("Listas copiadas com sucesso! Agora é só colar no código da Ficha do Jogador.");
+    alert("Lista de frutas ocupadas copiada com sucesso!");
   }).catch(err => {
-    alert("Erro ao copiar. Verifique as permissões do navegador.");
+    alert("Erro ao copiar.");
   });
 });
 
