@@ -398,24 +398,30 @@ document.getElementById('btnCancelarSorteio').addEventListener('click', () => {
   sorteioModal.style.display = 'none';
 });
 
-document.getElementById('btnExportarOcupadas').addEventListener('click', () => {
-  let exportText = "Frutas Ocupadas:\n\n";
+document.getElementById('btnDesocuparTodas').addEventListener('click', async () => {
+  let confirmacao = confirm("Tem certeza? Isso vai desocupar TODAS as frutas do banco de dados e remover os donos.");
+  if (!confirmacao) return;
+
   let ocupadas = items.filter(i => i.type === 'Akuma no Mi' && i.ocupada);
-  
-  ocupadas.sort((a, b) => a.name.localeCompare(b.name));
-  
-  ocupadas.forEach(i => {
-    let dono = i.donoId ? i.donoId : "NPC";
-    exportText += `- ${i.name} (${i.subtype}) [Dono: ${dono}]\n`;
-  });
-  
-  if (ocupadas.length === 0) exportText = "Nenhuma fruta ocupada no momento.";
-  
-  navigator.clipboard.writeText(exportText).then(() => {
-    alert("Lista de frutas ocupadas copiada com sucesso!");
-  }).catch(err => {
-    alert("Erro ao copiar.");
-  });
+
+  if (ocupadas.length === 0) {
+    alert("Nenhuma fruta para desocupar.");
+    return;
+  }
+
+  let count = 0;
+  for (let item of ocupadas) {
+    const docRef = doc(db, "lista_one_piece_db", item.id);
+    await updateDoc(docRef, {
+      ocupada: false,
+      donoId: null,
+      pedidoPor: null,
+      pedidoNome: null
+    });
+    count++;
+  }
+
+  alert(count + " frutas foram desocupadas com sucesso!");
 });
 
 document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
