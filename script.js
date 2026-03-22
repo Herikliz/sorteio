@@ -214,7 +214,7 @@ function renderList() {
     if (item.type === 'Ilha' && item.mar) {
       itemText += ` - ${item.mar}`;
     } else if (item.type === 'Akuma no Mi') {
-      itemText += ` - ฿ ${(item.preco || 100000000).toLocaleString('pt-BR')}`;
+      itemText += ` - ฿${(item.preco || 100000000).toLocaleString('pt-BR')}`;
     }
     span.textContent = itemText;
     li.appendChild(span);
