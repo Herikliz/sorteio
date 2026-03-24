@@ -500,8 +500,12 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
       texto += `* Ilha: *${nomeIlha}*\n\n`;
       texto += "* Frutas:\n";
       akumas.forEach((akuma, index) => {
-        texto += `${index + 1}. *${akuma.name}*\n`;
+        texto += `${index + 1}. *${akuma.name} - ฿${(akuma.preco || 100000000).toLocaleString('pt-BR')}*\n`;
       });
+      texto += "\nAbaixo estão os links que lhes permite verificar qual é a cada uma das Frutas.\n";
+      texto += "1. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/logia\n";
+      texto += "2. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/paramecia\n";
+      texto += "3. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/zoan";
       navigator.clipboard.writeText(texto).then(() => {
         alert("Sorteio copiado com sucesso!");
       }).catch(err => {
