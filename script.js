@@ -466,6 +466,9 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
   akumas = akumas.sort(() => 0.5 - Math.random()).slice(0, qtdAkuma);
   ilhas = ilhas.sort(() => 0.5 - Math.random()).slice(0, qtdIlhas);
 
+  akumas.sort((a, b) => a.name.localeCompare(b.name));
+  ilhas.sort((a, b) => a.name.localeCompare(b.name));
+
   const sorteados = [...akumas, ...ilhas];
 
   if (sorteados.length > 0) {
