@@ -186,7 +186,12 @@ function renderList() {
     
     if (cat === 'Tudo') matchCat = true;
     if (cat === 'Frutas' && item.type === 'Akuma no Mi') matchCat = true;
+    if (cat === 'Paramecias' && item.type === 'Akuma no Mi' && item.subtype.includes('Paramecia')) matchCat = true;
+    if (cat === 'Logias' && item.type === 'Akuma no Mi' && item.subtype === 'Logia') matchCat = true;
+    if (cat === 'Zoans' && item.type === 'Akuma no Mi' && item.subtype.includes('Zoan')) matchCat = true;
+    if (cat === 'AkumasUso' && item.type === 'Akuma no Mi' && item.ocupada) matchCat = true;
     if (cat === 'Ilhas' && item.type === 'Ilha') matchCat = true;
+    if (cat.startsWith('Ilha-') && item.type === 'Ilha' && item.mar === cat.substring(5)) matchCat = true;
 
     return matchSearch && matchCat;
   });
@@ -480,6 +485,27 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
       ul.appendChild(li);
     });
     sorteioResult.appendChild(ul);
+
+    const btnCopiar = document.createElement('button');
+    btnCopiar.textContent = "Copiar Sorteio";
+    btnCopiar.style.marginTop = "15px";
+    btnCopiar.style.backgroundColor = "#27ae60";
+    btnCopiar.onclick = () => {
+      let nomeIlha = ilhas.length > 0 ? ilhas[0].name : "Nenhuma";
+      let texto = "*SORTEIO DAS FRUTAS QUE ESTÃO PRESENTES NA GRAND LINE PARA SEREM COMPRADAS*\n\n";
+      texto += `* Quantidade: *${akumas.length}*\n\n`;
+      texto += `* Ilha: *${nomeIlha}*\n\n`;
+      texto += "* Frutas:\n";
+      akumas.forEach((akuma, index) => {
+        texto += `${index + 1}. *${akuma.name}*\n`;
+      });
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Sorteio copiado com sucesso!");
+      }).catch(err => {
+        alert("Erro ao copiar: " + err);
+      });
+    };
+    sorteioResult.appendChild(btnCopiar);
   } else {
     alert("Nenhum item encontrado com os filtros selecionados!");
   }
