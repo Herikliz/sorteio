@@ -463,8 +463,18 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
     return true;
   });
 
-  akumas = akumas.sort(() => 0.5 - Math.random()).slice(0, qtdAkuma);
-  ilhas = ilhas.sort(() => 0.5 - Math.random()).slice(0, qtdIlhas);
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  shuffleArray(akumas);
+  akumas = akumas.slice(0, qtdAkuma);
+
+  shuffleArray(ilhas);
+  ilhas = ilhas.slice(0, qtdIlhas);
 
   akumas.sort((a, b) => a.name.localeCompare(b.name));
   ilhas.sort((a, b) => a.name.localeCompare(b.name));
