@@ -51,7 +51,7 @@ function updateSubtypes() {
     newSea.style.display = 'inline-block';
     newPrice.style.display = 'none';
     newSubtype.multiple = true;
-    newSubtype.style.height = '80px';
+    newSubtype.style.height = '100px';
     ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
       newSubtype.add(new Option(s, s));
     });
@@ -133,42 +133,44 @@ function renderPedidos() {
   
   if (pendentes.length > 0) {
     const box = document.createElement('div');
-    box.style.background = '#3b2a1a';
-    box.style.padding = '15px';
-    box.style.marginBottom = '20px';
-    box.style.borderRadius = '8px';
-    box.style.borderLeft = '5px solid #f39c12';
+    box.className = 'pedido-card';
     
     const titulo = document.createElement('h3');
-    titulo.textContent = 'Pedidos Pendentes';
-    titulo.style.marginTop = '0';
+    titulo.textContent = '🔔 Pedidos Pendentes de Jogadores';
     box.appendChild(titulo);
     
     pendentes.forEach(item => {
       const p = document.createElement('p');
-      p.textContent = `Personagem "${item.pedidoNome}" selecionou a fruta ${item.name} (${item.subtype}).`;
+      p.innerHTML = `O personagem <strong>"${item.pedidoNome}"</strong> solicitou a posse da fruta <strong>${item.name}</strong> (${item.subtype}).`;
+      
+      const controls = document.createElement('div');
       
       const btnAprovar = document.createElement('button');
-      btnAprovar.textContent = 'Aprovar';
-      btnAprovar.style.backgroundColor = '#27ae60';
-      btnAprovar.style.marginRight = '10px';
+      btnAprovar.innerHTML = '✓ Aprovar';
+      btnAprovar.className = 'btn btn-success';
       btnAprovar.onclick = async () => {
         await updateDoc(doc(db, "lista_one_piece_db", item.id), { ocupada: true, donoId: item.pedidoPor });
       };
       
       const btnNegar = document.createElement('button');
-      btnNegar.textContent = 'Negar';
-      btnNegar.style.backgroundColor = '#c0392b';
+      btnNegar.innerHTML = '✕ Negar';
+      btnNegar.className = 'btn btn-danger';
       btnNegar.onclick = async () => {
         await updateDoc(doc(db, "fichas_op", item.pedidoPor), { "info.akumaNome": "", "info.akumaId": "" });
         await updateDoc(doc(db, "lista_one_piece_db", item.id), { pedidoPor: null, pedidoNome: null });
       };
       
-      p.appendChild(document.createElement('br'));
-      p.appendChild(document.createElement('br'));
-      p.appendChild(btnAprovar);
-      p.appendChild(btnNegar);
+      controls.appendChild(btnAprovar);
+      controls.appendChild(btnNegar);
+      
       box.appendChild(p);
+      box.appendChild(controls);
+      
+      const divider = document.createElement('hr');
+      divider.style.border = 'none';
+      divider.style.borderTop = '1px solid rgba(255,255,255,0.1)';
+      divider.style.margin = '15px 0';
+      box.appendChild(divider);
     });
     
     pedidosArea.appendChild(box);
@@ -203,6 +205,7 @@ function renderList() {
 
   filtered.forEach(item => {
     const li = document.createElement('li');
+    li.className = 'item-card';
     
     if (item.type === 'Ilha') {
       li.classList.add('color-ilha');
@@ -214,24 +217,42 @@ function renderList() {
       li.classList.add('color-zoan');
     }
 
-    const span = document.createElement('span');
-    let itemText = `${item.name} (${item.subtype})`;
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'item-info';
+
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'item-title';
+    titleDiv.textContent = item.name;
+
+    const subDiv = document.createElement('div');
+    subDiv.className = 'item-subtitle';
+    subDiv.textContent = item.subtype;
     if (item.type === 'Ilha' && item.mar) {
-      itemText += ` - ${item.mar}`;
-    } else if (item.type === 'Akuma no Mi') {
-      itemText += ` - ฿${(item.preco || 100000000).toLocaleString('pt-BR')}`;
+      subDiv.textContent += ` • ${item.mar}`;
     }
-    span.textContent = itemText;
-    li.appendChild(span);
+
+    infoDiv.appendChild(titleDiv);
+    infoDiv.appendChild(subDiv);
+
+    if (item.type === 'Akuma no Mi') {
+      const priceDiv = document.createElement('div');
+      priceDiv.className = 'item-price';
+      priceDiv.textContent = `฿ ${(item.preco || 100000000).toLocaleString('pt-BR')}`;
+      infoDiv.appendChild(priceDiv);
+    }
+
+    li.appendChild(infoDiv);
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.className = 'item-actions';
 
     const editBtn = document.createElement('button');
     editBtn.textContent = 'Editar';
-    editBtn.style.backgroundColor = '#f39c12';
-    editBtn.style.marginRight = '10px';
+    editBtn.className = 'btn btn-warning';
 
     const delBtn = document.createElement('button');
     delBtn.textContent = 'Remover';
-    delBtn.className = 'btn-delete';
+    delBtn.className = 'btn btn-danger';
     
     if (item.type === 'Akuma no Mi') {
       const label = document.createElement('label');
@@ -250,31 +271,41 @@ function renderList() {
       
       label.appendChild(cb);
       label.appendChild(document.createTextNode('Ocupada'));
-      li.appendChild(label);
-    } else {
-      editBtn.style.marginLeft = 'auto';
+      actionsDiv.appendChild(label);
     }
 
     editBtn.addEventListener('click', () => {
       li.innerHTML = '';
-      li.style.flexWrap = 'wrap';
-      li.style.gap = '10px';
+      li.classList.remove('item-card');
+      li.style.background = 'var(--bg-card)';
+      li.style.padding = '20px';
+      li.style.borderRadius = '12px';
+      li.style.border = '1px solid var(--border-color)';
+
+      const container = document.createElement('div');
+      container.className = 'edit-mode-container';
+
+      const row1 = document.createElement('div');
+      row1.className = 'edit-mode-row';
 
       const editName = document.createElement('input');
       editName.type = 'text';
       editName.value = item.name;
-      editName.style.flex = '1';
 
       const editType = document.createElement('select');
       editType.innerHTML = `<option value="Akuma no Mi" ${item.type === 'Akuma no Mi' ? 'selected' : ''}>Akuma no Mi</option>
                             <option value="Ilha" ${item.type === 'Ilha' ? 'selected' : ''}>Ilha</option>`;
+
+      row1.append(editName, editType);
+
+      const row2 = document.createElement('div');
+      row2.className = 'edit-mode-row';
 
       const editSubtype = document.createElement('select');
 
       const editPrice = document.createElement('input');
       editPrice.type = 'text';
       editPrice.value = (item.preco || 100000000).toLocaleString('pt-BR');
-      editPrice.style.width = '120px';
       editPrice.addEventListener('input', (e) => {
         e.target.value = formatCurrency(e.target.value);
       });
@@ -284,22 +315,24 @@ function renderList() {
         editSea.add(new Option(s, s, false, s === item.mar));
       });
 
+      row2.append(editSubtype, editPrice, editSea);
+
       function updateEditSubtypes() {
         editSubtype.innerHTML = '';
         const currentSubtypes = item.subtype ? item.subtype.split(', ') : [];
         if (editType.value === 'Akuma no Mi') {
           editSea.style.display = 'none';
-          editPrice.style.display = 'inline-block';
+          editPrice.style.display = 'block';
           editSubtype.multiple = false;
           editSubtype.style.height = 'auto';
           ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
             editSubtype.add(new Option(s, s, false, s === item.subtype));
           });
         } else {
-          editSea.style.display = 'inline-block';
+          editSea.style.display = 'block';
           editPrice.style.display = 'none';
           editSubtype.multiple = true;
-          editSubtype.style.height = '80px';
+          editSubtype.style.height = '100px';
           ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
             editSubtype.add(new Option(s, s, false, currentSubtypes.includes(s)));
           });
@@ -308,9 +341,12 @@ function renderList() {
       editType.addEventListener('change', updateEditSubtypes);
       updateEditSubtypes();
 
+      const actionsRow = document.createElement('div');
+      actionsRow.className = 'edit-actions';
+
       const saveBtn = document.createElement('button');
-      saveBtn.textContent = 'Salvar';
-      saveBtn.style.backgroundColor = '#27ae60';
+      saveBtn.textContent = 'Salvar Alterações';
+      saveBtn.className = 'btn btn-success';
       saveBtn.onclick = async () => {
         const novoNome = editName.value.trim();
         const selectedEditSubtypes = Array.from(editSubtype.selectedOptions).map(opt => opt.value).join(', ');
@@ -352,18 +388,21 @@ function renderList() {
 
       const cancelBtn = document.createElement('button');
       cancelBtn.textContent = 'Cancelar';
-      cancelBtn.style.backgroundColor = '#7f8c8d';
+      cancelBtn.className = 'btn btn-secondary';
       cancelBtn.addEventListener('click', () => renderList());
 
-      li.append(editName, editType, editSubtype, editPrice, editSea, saveBtn, cancelBtn);
+      actionsRow.append(cancelBtn, saveBtn);
+      container.append(row1, row2, actionsRow);
+      li.appendChild(container);
     });
 
     delBtn.addEventListener('click', async () => {
       await deleteDoc(doc(db, "lista_one_piece_db", item.id));
     });
     
-    li.appendChild(editBtn);
-    li.appendChild(delBtn);
+    actionsDiv.appendChild(editBtn);
+    actionsDiv.appendChild(delBtn);
+    li.appendChild(actionsDiv);
 
     itemList.appendChild(li);
   });
@@ -484,25 +523,25 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
   if (sorteados.length > 0) {
     sorteioResult.style.display = 'block';
     const h3 = document.createElement('h3');
-    h3.textContent = "Resultado do Sorteio:";
+    h3.innerHTML = "✨ Resultado do Sorteio";
     sorteioResult.appendChild(h3);
     
     const ul = document.createElement('ul');
     sorteados.forEach(item => {
       const li = document.createElement('li');
-      let textoSorteio = `${item.name} (${item.subtype})`;
+      let textoSorteio = `<strong>${item.name}</strong> (${item.subtype})`;
       if (item.type === 'Ilha' && item.mar) {
         textoSorteio += ` - ${item.mar}`;
       }
-      li.textContent = textoSorteio;
+      li.innerHTML = textoSorteio;
       ul.appendChild(li);
     });
     sorteioResult.appendChild(ul);
 
     const btnCopiar = document.createElement('button');
-    btnCopiar.textContent = "Copiar Sorteio";
-    btnCopiar.style.marginTop = "15px";
-    btnCopiar.style.backgroundColor = "#27ae60";
+    btnCopiar.textContent = "Copiar Resultado para o WhatsApp";
+    btnCopiar.className = "btn btn-success";
+    btnCopiar.style.marginTop = "20px";
     btnCopiar.onclick = () => {
       let nomeIlha = ilhas.length > 0 ? ilhas[0].name : "Nenhuma";
       let texto = "*SORTEIO DAS FRUTAS QUE ESTÃO PRESENTES NA GRAND LINE PARA SEREM COMPRADAS*\n\n";

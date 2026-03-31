@@ -2,115 +2,151 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Gerenciador de Lista</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Line Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-  <h1>Gerenciador de Itens</h1>
+<div class="main-container">
+  <header class="app-header">
+    <h1>Grand Line <span>Manager</span></h1>
+    <p class="subtitle">Sistema de Gerenciamento do Novo Mundo</p>
+  </header>
 
-  <div class="panel">
-    <textarea id="newName" placeholder="Nome do Item (cole a lista, um por linha)" style="padding: 10px 14px; border: 1px solid #444; border-radius: 6px; font-size: 14px; background-color: #333; color: #fff; min-width: 200px; height: 38px; resize: vertical; font-family: 'Segoe UI', sans-serif;"></textarea>
-    <select id="newType">
-      <option value="Akuma no Mi">Akuma no Mi</option>
-      <option value="Ilha">Ilha</option>
-    </select>
-    <select id="newSubtype"></select>
-    <input type="text" id="newPrice" placeholder="Preço (Mín: 100.000.000)" style="width: 170px;">
-    <select id="newSea" style="display: none;">
-      <option value="East Blue">East Blue</option>
-      <option value="West Blue">West Blue</option>
-      <option value="North Blue">North Blue</option>
-      <option value="South Blue">South Blue</option>
-      <option value="Paraíso">Paraíso</option>
-      <option value="Novo Mundo">Novo Mundo</option>
-      <option value="Calm Belt">Calm Belt</option>
-      <option value="Localização Desconhecida">Localização Desconhecida</option>
-    </select>
-    <button id="addBtn">Adicionar à Lista</button>
+  <div class="dashboard-grid">
+    <section class="card glass-panel add-panel">
+      <h2><i class="icon">+</i> Adicionar Novos Itens</h2>
+      <div class="input-group">
+        <textarea id="newName" placeholder="Nome do Item (cole a lista, um por linha)"></textarea>
+      </div>
+      <div class="controls-row">
+        <select id="newType">
+          <option value="Akuma no Mi">Akuma no Mi</option>
+          <option value="Ilha">Ilha</option>
+        </select>
+        <select id="newSubtype"></select>
+        <input type="text" id="newPrice" placeholder="Preço (Mín: 100.000.000)">
+        <select id="newSea" style="display: none;">
+          <option value="East Blue">East Blue</option>
+          <option value="West Blue">West Blue</option>
+          <option value="North Blue">North Blue</option>
+          <option value="South Blue">South Blue</option>
+          <option value="Paraíso">Paraíso</option>
+          <option value="Novo Mundo">Novo Mundo</option>
+          <option value="Calm Belt">Calm Belt</option>
+          <option value="Localização Desconhecida">Localização Desconhecida</option>
+        </select>
+      </div>
+      <button id="addBtn" class="btn btn-primary btn-block">Adicionar à Lista</button>
+    </section>
+
+    <section class="card glass-panel filter-panel">
+      <h2><i class="icon">🔍</i> Filtros e Ferramentas</h2>
+      <div class="input-group">
+        <input type="text" id="searchInput" placeholder="Pesquisar no banco de dados...">
+      </div>
+      <div class="controls-row">
+        <select id="filterCategory">
+          <option value="Tudo">Mostrar Tudo</option>
+          <option value="Frutas">Somente Frutas</option>
+          <option value="Paramecias">Somente Paramecias</option>
+          <option value="Logias">Somente Logias</option>
+          <option value="Zoans">Somente Zoans</option>
+          <option value="AkumasUso">Akumas em Uso</option>
+          <option value="Ilhas">Somente Ilhas</option>
+          <option value="Ilha-East Blue">East Blue</option>
+          <option value="Ilha-West Blue">West Blue</option>
+          <option value="Ilha-North Blue">North Blue</option>
+          <option value="Ilha-South Blue">South Blue</option>
+          <option value="Ilha-Paraíso">Paraíso</option>
+          <option value="Ilha-Novo Mundo">Novo Mundo</option>
+          <option value="Ilha-Calm Belt">Calm Belt</option>
+          <option value="Ilha-Localização Desconhecida">Localização Desconhecida</option>
+        </select>
+      </div>
+      <div class="action-buttons">
+        <button id="sortearBtn" class="btn btn-accent">Sortear Itens</button>
+        <button id="btnDesocuparTodas" class="btn btn-danger">Desocupar Frutas</button>
+      </div>
+    </section>
   </div>
 
-  <div class="panel">
-    <input type="text" id="searchInput" placeholder="Pesquisar por nome...">
-    <select id="filterCategory">
-      <option value="Tudo">Mostrar Tudo</option>
-      <option value="Frutas">Somente Frutas</option>
-      <option value="Paramecias">Somente Paramecias</option>
-      <option value="Logias">Somente Logias</option>
-      <option value="Zoans">Somente Zoans</option>
-      <option value="AkumasUso">Akumas em Uso</option>
-      <option value="Ilhas">Somente Ilhas</option>
-      <option value="Ilha-East Blue">East Blue</option>
-      <option value="Ilha-West Blue">West Blue</option>
-      <option value="Ilha-North Blue">North Blue</option>
-      <option value="Ilha-South Blue">South Blue</option>
-      <option value="Ilha-Paraíso">Paraíso</option>
-      <option value="Ilha-Novo Mundo">Novo Mundo</option>
-      <option value="Ilha-Calm Belt">Calm Belt</option>
-      <option value="Ilha-Localização Desconhecida">Localização Desconhecida</option>
-    </select>
-    <button id="sortearBtn">Sortear Itens</button>
-    <button id="btnDesocuparTodas" style="background-color: #c0392b; margin-left: 10px;">Desocupar Todas as Frutas</button>
-  </div>
+  <div id="pedidosArea" class="pedidos-container"></div>
+  <div id="sorteioResult" class="sorteio-result-card"></div>
 
-  <div id="pedidosArea"></div>
-  <div id="sorteioResult"></div>
-
-  <ul id="itemList"></ul>
+  <section class="list-section">
+    <div class="list-header">
+      <h2>Inventário do Mundo</h2>
+      <span class="badge">Atualizado em tempo real</span>
+    </div>
+    <ul id="itemList" class="item-grid"></ul>
+  </section>
 </div>
 
-<div id="sorteioModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
-  <div style="background:#252526; padding:20px; border-radius:8px; border:1px solid #444; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; color:#fff;">
-    <h2 style="margin-top:0; border-bottom:1px solid #444; padding-bottom:10px;">Configurações do Sorteio</h2>
+<div id="sorteioModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Configurações do Sorteio</h2>
+    </div>
     
-    <div style="display:flex; gap:20px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:200px;">
-        <h3 style="color:#f39c12;">Akuma no Mi</h3>
-        <label>Quantidade: <input type="number" id="sorteioQtdAkuma" value="0" min="0" style="width:60px;"></label>
-        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
-          <strong>Faixa de Preço:</strong><br>
-          <label>Mín: <input type="text" id="sorteioMinPreco" value="100.000.000" style="width:110px;"></label><br>
-          <label>Máx: <input type="text" id="sorteioMaxPreco" value="100.000.000" style="width:110px;"></label>
+    <div class="modal-body">
+      <div class="config-section akuma-config">
+        <h3>🍎 Akuma no Mi</h3>
+        <div class="config-row">
+          <label>Quantidade:</label>
+          <input type="number" id="sorteioQtdAkuma" value="0" min="0">
         </div>
-        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
-          <strong>Subtipos:</strong><br>
-          <label><input type="checkbox" class="chk-akuma-sub" value="Paramecia" checked> Paramecia</label><br>
-          <label><input type="checkbox" class="chk-akuma-sub" value="Paramecia Especial" checked> Paramecia Especial</label><br>
-          <label><input type="checkbox" class="chk-akuma-sub" value="Logia" checked> Logia</label><br>
-          <label><input type="checkbox" class="chk-akuma-sub" value="Zoan" checked> Zoan</label><br>
-          <label><input type="checkbox" class="chk-akuma-sub" value="Zoan Ancestral" checked> Zoan Ancestral</label><br>
-          <label><input type="checkbox" class="chk-akuma-sub" value="Zoan Mítica" checked> Zoan Mítica</label>
+        <div class="config-group">
+          <h4>Faixa de Preço</h4>
+          <div class="price-inputs">
+            <input type="text" id="sorteioMinPreco" value="100.000.000" placeholder="Mínimo">
+            <span>até</span>
+            <input type="text" id="sorteioMaxPreco" value="100.000.000" placeholder="Máximo">
+          </div>
+        </div>
+        <div class="config-group checkboxes-grid">
+          <h4>Subtipos Permitidos</h4>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-akuma-sub" value="Paramecia" checked> <span class="checkmark"></span> Paramecia</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-akuma-sub" value="Paramecia Especial" checked> <span class="checkmark"></span> Paramecia Especial</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-akuma-sub" value="Logia" checked> <span class="checkmark"></span> Logia</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-akuma-sub" value="Zoan" checked> <span class="checkmark"></span> Zoan</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-akuma-sub" value="Zoan Ancestral" checked> <span class="checkmark"></span> Zoan Ancestral</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-akuma-sub" value="Zoan Mítica" checked> <span class="checkmark"></span> Zoan Mítica</label>
         </div>
       </div>
 
-      <div style="flex:1; min-width:200px;">
-        <h3 style="color:#27ae60;">Ilhas</h3>
-        <label>Quantidade: <input type="number" id="sorteioQtdIlha" value="0" min="0" style="width:60px;"></label>
-        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
-          <strong>Organizações:</strong><br>
-          <label><input type="checkbox" class="chk-ilha-sub" value="Pirata" checked> Pirata</label><br>
-          <label><input type="checkbox" class="chk-ilha-sub" value="Marinha/Governo Mundial" checked> Marinha/Gov.</label><br>
-          <label><input type="checkbox" class="chk-ilha-sub" value="Independente" checked> Independente</label><br>
-          <label><input type="checkbox" class="chk-ilha-sub" value="Despovoada" checked> Despovoada</label>
+      <div class="config-section ilha-config">
+        <h3>🏝️ Ilhas</h3>
+        <div class="config-row">
+          <label>Quantidade:</label>
+          <input type="number" id="sorteioQtdIlha" value="0" min="0">
         </div>
-        <div style="margin-top:10px; font-size:14px; line-height:1.6;">
-          <strong>Mares:</strong><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="East Blue" checked> East Blue</label><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="West Blue" checked> West Blue</label><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="North Blue" checked> North Blue</label><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="South Blue" checked> South Blue</label><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="Paraíso" checked> Paraíso</label><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="Novo Mundo" checked> Novo Mundo</label><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="Calm Belt" checked> Calm Belt</label><br>
-          <label><input type="checkbox" class="chk-ilha-mar" value="Localização Desconhecida" checked> Desconhecida</label>
+        <div class="config-group checkboxes-grid">
+          <h4>Organizações</h4>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-sub" value="Pirata" checked> <span class="checkmark"></span> Pirata</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-sub" value="Marinha/Governo Mundial" checked> <span class="checkmark"></span> Marinha/Gov.</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-sub" value="Independente" checked> <span class="checkmark"></span> Independente</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-sub" value="Despovoada" checked> <span class="checkmark"></span> Despovoada</label>
+        </div>
+        <div class="config-group checkboxes-grid">
+          <h4>Mares</h4>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="East Blue" checked> <span class="checkmark"></span> East Blue</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="West Blue" checked> <span class="checkmark"></span> West Blue</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="North Blue" checked> <span class="checkmark"></span> North Blue</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="South Blue" checked> <span class="checkmark"></span> South Blue</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="Paraíso" checked> <span class="checkmark"></span> Paraíso</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="Novo Mundo" checked> <span class="checkmark"></span> Novo Mundo</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="Calm Belt" checked> <span class="checkmark"></span> Calm Belt</label>
+          <label class="custom-checkbox"><input type="checkbox" class="chk-ilha-mar" value="Localização Desconhecida" checked> <span class="checkmark"></span> Desconhecida</label>
         </div>
       </div>
     </div>
 
-    <div style="margin-top:20px; text-align:right; border-top:1px solid #444; padding-top:15px;">
-      <button id="btnConfirmarSorteio" style="background:#27ae60; color:#fff; padding:10px 20px; border:none; border-radius:4px; cursor:pointer;">Sortear</button>
-      <button id="btnCancelarSorteio" style="background:#c0392b; color:#fff; padding:10px 20px; border:none; border-radius:4px; cursor:pointer; margin-left:10px;">Cancelar</button>
+    <div class="modal-footer">
+      <button id="btnCancelarSorteio" class="btn btn-secondary">Cancelar</button>
+      <button id="btnConfirmarSorteio" class="btn btn-success">Realizar Sorteio</button>
     </div>
   </div>
 </div>
