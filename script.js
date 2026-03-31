@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, setDoc, onSnapshot, deleteDoc, doc, updateDoc, getDocs, collectionGroup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, setDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDG9zDcphqyTfXXZBWc0-uRV74eeie_tEE",
@@ -506,6 +506,7 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
     btnCopiar.onclick = () => {
       let nomeIlha = ilhas.length > 0 ? ilhas[0].name : "Nenhuma";
       let texto = "*SORTEIO DAS FRUTAS QUE ESTÃO PRESENTES NA GRAND LINE PARA SEREM COMPRADAS*\n\n";
+      texto += `* Quantidade: *${akumas.length}*\n\n`;
       texto += `* Ilha: *${nomeIlha}*\n\n`;
       texto += "* Frutas:\n";
       akumas.forEach((akuma, index) => {
@@ -524,64 +525,5 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
     sorteioResult.appendChild(btnCopiar);
   } else {
     alert("Nenhum item encontrado com os filtros selecionados!");
-  }
-});
-
-document.getElementById('btnCopiarNpcs').addEventListener('click', async () => {
-  try {
-    let texto = "";
-    
-    // Tentativa 1: Verifica se npcsE é um campo (Array, String ou Objeto/Mapa) dentro do documento fichas_op
-    const fichasSnapshot = await getDocs(collection(db, "fichas_op"));
-    fichasSnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      if (data.npcsE) {
-        let npcsStr = "";
-        if (Array.isArray(data.npcsE)) {
-          npcsStr = data.npcsE.join('\n');
-        } else if (typeof data.npcsE === 'object') {
-          // Se for um mapa, pega as chaves (ex: Bastian, Orochi)
-          npcsStr = Object.keys(data.npcsE).join('\n');
-        } else {
-          npcsStr = data.npcsE;
-        }
-        texto += `${docSnap.id}\n${npcsStr}\n\n`;
-      }
-    });
-
-    // Tentativa 2: Se não encontrou como campo, significa que é uma Subcoleção. Vamos buscar em todas!
-    if (!texto) {
-      const npcsSnapshot = await getDocs(collectionGroup(db, "npcsE"));
-      let agrupados = {};
-      
-      npcsSnapshot.forEach((docSnap) => {
-        // Pega o ID do documento "pai" (o ID do usuário, ex: 2771)
-        const userId = docSnap.ref.parent.parent.id;
-        const data = docSnap.data();
-        
-        // O nome do NPC pode ser o próprio ID do documento ou um campo interno
-        const npcName = data.nome || data.name || docSnap.id;
-        
-        if (!agrupados[userId]) {
-          agrupados[userId] = [];
-        }
-        agrupados[userId].push(npcName);
-      });
-      
-      // Monta o texto no formato exigido
-      for (const [userId, npcs] of Object.entries(agrupados)) {
-        texto += `${userId}\n${npcs.join('\n')}\n\n`;
-      }
-    }
-    
-    if (!texto) {
-      alert("Nenhum NPC encontrado na base de dados. Verifique a estrutura.");
-      return;
-    }
-    
-    await navigator.clipboard.writeText(texto.trim());
-    alert("NPCs copiados com sucesso!");
-  } catch (error) {
-    alert("Erro ao copiar: " + error.message);
   }
 });
