@@ -506,7 +506,6 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
     btnCopiar.onclick = () => {
       let nomeIlha = ilhas.length > 0 ? ilhas[0].name : "Nenhuma";
       let texto = "*SORTEIO DAS FRUTAS QUE ESTÃO PRESENTES NA GRAND LINE PARA SEREM COMPRADAS*\n\n";
-      texto += `* Quantidade: *${akumas.length}*\n\n`;
       texto += `* Ilha: *${nomeIlha}*\n\n`;
       texto += "* Frutas:\n";
       akumas.forEach((akuma, index) => {
