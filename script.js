@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, setDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, setDoc, onSnapshot, deleteDoc, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDG9zDcphqyTfXXZBWc0-uRV74eeie_tEE",
@@ -524,5 +524,30 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
     sorteioResult.appendChild(btnCopiar);
   } else {
     alert("Nenhum item encontrado com os filtros selecionados!");
+  }
+});
+
+document.getElementById('btnCopiarNpcs').addEventListener('click', async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "fichas_op"));
+    let texto = "";
+    
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (data.npcsE) {
+        let npcs = Array.isArray(data.npcsE) ? data.npcsE.join('\n') : data.npcsE;
+        texto += `${docSnap.id}\n${npcs}\n\n`;
+      }
+    });
+    
+    if (!texto) {
+      alert("Nenhum NPC encontrado na base de dados.");
+      return;
+    }
+    
+    await navigator.clipboard.writeText(texto.trim());
+    alert("NPCs copiados com sucesso!");
+  } catch (error) {
+    alert("Erro ao copiar: " + error.message);
   }
 });
