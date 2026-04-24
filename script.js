@@ -527,14 +527,14 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
         let valorD = prompt("Digite um numero de 1 a 100 para o desconto:");
         porcentagem = parseInt(valorD) || 0;
         if (porcentagem > 0) {
-          textoModificacao = `\n* Desconto: *${porcentagem}%*\n`;
+          textoModificacao = `\n* As Frutas dessa vez receberam um desconto de *${porcentagem}%*, aproveite!\n`;
           porcentagem = -porcentagem;
         }
       } else if (tipoModificacao === "A" || tipoModificacao === "a") {
         let valorA = prompt("Digite um numero de 1 a 100 para o acréscimo:");
         porcentagem = parseInt(valorA) || 0;
         if (porcentagem > 0) {
-          textoModificacao = `\n* Acréscimo: *${porcentagem}%*\n`;
+          textoModificacao = `\n* As Frutas dessa vez receberam um acréscimo de *${porcentagem}%* no preço, a vida não tá fácil pra ninguém...\n`;
         }
       }
 
