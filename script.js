@@ -527,7 +527,7 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
         let valorD = prompt("Digite um numero de 1 a 100 para o desconto:");
         porcentagem = parseInt(valorD) || 0;
         if (porcentagem > 0) {
-          textoModificacao = `\n* As Frutas dessa vez receberam um desconto de *${porcentagem}%*, aproveite!\n`;
+          textoModificacao = `\n* As Frutas dessa vez receberam um desconto de *${porcentagem}%* no preço, aproveite!\n`;
           porcentagem = -porcentagem;
         }
       } else if (tipoModificacao === "A" || tipoModificacao === "a") {
