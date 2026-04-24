@@ -442,32 +442,6 @@ document.getElementById('btnCancelarSorteio').addEventListener('click', () => {
   sorteioModal.style.display = 'none';
 });
 
-document.getElementById('btnDesocuparTodas').addEventListener('click', async () => {
-  let confirmacao = confirm("Tem certeza? Isso vai desocupar TODAS as frutas do banco de dados e remover os donos.");
-  if (!confirmacao) return;
-
-  let ocupadas = items.filter(i => i.type === 'Akuma no Mi' && i.ocupada);
-
-  if (ocupadas.length === 0) {
-    alert("Nenhuma fruta para desocupar.");
-    return;
-  }
-
-  let count = 0;
-  for (let item of ocupadas) {
-    const docRef = doc(db, "lista_one_piece_db", item.id);
-    await updateDoc(docRef, {
-      ocupada: false,
-      donoId: null,
-      pedidoPor: null,
-      pedidoNome: null
-    });
-    count++;
-  }
-
-  alert(count + " frutas foram desocupadas com sucesso!");
-});
-
 document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
   sorteioModal.style.display = 'none';
   sorteioResult.innerHTML = '';
@@ -543,18 +517,46 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
     btnCopiar.className = "btn btn-success";
     btnCopiar.style.marginTop = "20px";
     btnCopiar.onclick = () => {
-      let nomeIlha = ilhas.length > 0 ? ilhas[0].name : "Nenhuma";
-      let texto = "*SORTEIO DAS FRUTAS QUE ESTÃO PRESENTES NA GRAND LINE PARA SEREM COMPRADAS*\n\n";
-      texto += `* Quantidade: *${akumas.length}*\n\n`;
-      texto += `* Ilha: *${nomeIlha}*\n\n`;
-      texto += "* Frutas:\n";
+      let nomeIlha = ilhas.length > 0 ? ilhas.map(i => i.name).sort((a, b) => a.localeCompare(b)).join(" | ") : "Nenhuma";
+      
+      let tipoModificacao = prompt("Deseja aplicar Desconto ou Acréscimo aos precos? Digite D para desconto, A para acréscimo, ou deixe em branco para cancelar.");
+      let porcentagem = 0;
+      let textoModificacao = "";
+      
+      if (tipoModificacao === "D" || tipoModificacao === "d") {
+        let valorD = prompt("Digite um numero de 1 a 100 para o desconto:");
+        porcentagem = parseInt(valorD) || 0;
+        if (porcentagem > 0) {
+          textoModificacao = `\n* Desconto: *${porcentagem}%*\n`;
+          porcentagem = -porcentagem;
+        }
+      } else if (tipoModificacao === "A" || tipoModificacao === "a") {
+        let valorA = prompt("Digite um numero de 1 a 100 para o acréscimo:");
+        porcentagem = parseInt(valorA) || 0;
+        if (porcentagem > 0) {
+          textoModificacao = `\n* Acréscimo: *${porcentagem}%*\n`;
+        }
+      }
+
+      let texto = "*SORTEIO DAS FRUTAS RARAS QUE ESTÃO DISPONÍVEIS PARA SEREM COMPRADAS*\n\n";
+      texto += `* Ilha: *${nomeIlha}*\n`;
+      
+      if (textoModificacao !== "") {
+        texto += textoModificacao;
+      }
+      
+      texto += "\n* Frutas:\n";
       akumas.forEach((akuma, index) => {
-        texto += `${index + 1}. *${akuma.name} - ฿${(akuma.preco || 100000000).toLocaleString('pt-BR')}*\n`;
+        let precoOriginal = akuma.preco || 100000000;
+        let precoFinal = precoOriginal + (precoOriginal * (porcentagem / 100));
+        texto += `${index + 1}. *${akuma.name} - ฿${precoFinal.toLocaleString('pt-BR')}*\n`;
       });
+      
       texto += "\nAbaixo estão os links que lhes permite verificar qual é a cada uma das Frutas.\n";
       texto += "1. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/logia\n";
       texto += "2. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/paramecia\n";
       texto += "3. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/zoan";
+      
       navigator.clipboard.writeText(texto).then(() => {
         alert("Sorteio copiado com sucesso!");
       }).catch(err => {
