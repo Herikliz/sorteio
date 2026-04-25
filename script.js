@@ -52,7 +52,7 @@ function updateSubtypes() {
     newPrice.style.display = 'none';
     newSubtype.multiple = true;
     newSubtype.style.height = '100px';
-    ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
+    ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada', 'Roubo'].forEach(s => {
       newSubtype.add(new Option(s, s));
     });
   }
@@ -188,7 +188,7 @@ function renderList() {
     if (cat === 'Paramecias' && item.type === 'Akuma no Mi' && item.subtype.includes('Paramecia')) matchCat = true;
     if (cat === 'Logias' && item.type === 'Akuma no Mi' && item.subtype === 'Logia') matchCat = true;
     if (cat === 'Zoans' && item.type === 'Akuma no Mi' && item.subtype.includes('Zoan')) matchCat = true;
-    if (cat === 'Roubo' && item.type === 'Akuma no Mi' && item.subtype === 'Roubo') matchCat = true;
+    if (cat === 'Roubo' && item.subtype && item.subtype.includes('Roubo')) matchCat = true;
     if (cat === 'AkumasUso' && item.type === 'Akuma no Mi' && item.ocupada) matchCat = true;
     if (cat === 'Ilhas' && item.type === 'Ilha') matchCat = true;
     if (cat.startsWith('Ilha-') && item.type === 'Ilha' && item.mar === cat.substring(5)) matchCat = true;
@@ -333,7 +333,7 @@ function renderList() {
           editPrice.style.display = 'none';
           editSubtype.multiple = true;
           editSubtype.style.height = '100px';
-          ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada'].forEach(s => {
+          ['Pirata', 'Marinha/Governo Mundial', 'Independente', 'Despovoada', 'Roubo'].forEach(s => {
             editSubtype.add(new Option(s, s, false, currentSubtypes.includes(s)));
           });
         }
@@ -464,25 +464,6 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
   let subIlhaAllowed = Array.from(document.querySelectorAll('.chk-ilha-sub:checked')).map(cb => cb.value);
   let marIlhaAllowed = Array.from(document.querySelectorAll('.chk-ilha-mar:checked')).map(cb => cb.value);
 
-  let akumas = items.filter(i => {
-    if (i.type !== 'Akuma no Mi' || i.ocupada) return false;
-    let preco = i.preco || 100000000;
-    if (preco < minPreco || preco > maxPreco) return false;
-    return subAkumaAllowed.includes(i.subtype);
-  });
-
-  let ilhas = items.filter(i => {
-    if (i.type !== 'Ilha') return false;
-    let marVal = i.mar || 'Localização Desconhecida';
-    if (!marIlhaAllowed.includes(marVal)) return false;
-    
-    const ilhaSubtypes = i.subtype ? i.subtype.split(', ') : [];
-    const hasAllowedSubtype = ilhaSubtypes.some(sub => subIlhaAllowed.includes(sub));
-    if (ilhaSubtypes.length > 0 && !hasAllowedSubtype) return false;
-    
-    return true;
-  });
-
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -490,11 +471,64 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
     }
   }
 
-  shuffleArray(akumas);
-  akumas = akumas.slice(0, qtdAkuma);
+  let akumasRoubo = [];
+  let akumasNormal = [];
+  
+  items.forEach(i => {
+    if (i.type !== 'Akuma no Mi' || i.ocupada) return;
+    let preco = i.preco || 100000000;
+    if (preco < minPreco || preco > maxPreco) return;
+    
+    if (subAkumaAllowed.includes('Roubo') && i.subtype === 'Roubo') {
+      akumasRoubo.push(i);
+    } else if (subAkumaAllowed.includes(i.subtype)) {
+      akumasNormal.push(i);
+    }
+  });
 
-  shuffleArray(ilhas);
-  ilhas = ilhas.slice(0, qtdIlhas);
+  let ilhasRoubo = [];
+  let ilhasNormal = [];
+  
+  items.forEach(i => {
+    if (i.type !== 'Ilha') return;
+    let marVal = i.mar || 'Localização Desconhecida';
+    if (!marIlhaAllowed.includes(marVal)) return;
+    
+    const ilhaSubtypes = i.subtype ? i.subtype.split(', ') : [];
+    
+    if (subIlhaAllowed.includes('Roubo') && ilhaSubtypes.includes('Roubo')) {
+      ilhasRoubo.push(i);
+    } else {
+      const hasAllowedSubtype = ilhaSubtypes.some(sub => subIlhaAllowed.includes(sub));
+      if (hasAllowedSubtype || ilhaSubtypes.length === 0) {
+        ilhasNormal.push(i);
+      }
+    }
+  });
+
+  shuffleArray(akumasRoubo);
+  shuffleArray(akumasNormal);
+  
+  let akumas = [];
+  let qtdPegarRouboAkuma = Math.min(akumasRoubo.length, qtdAkuma);
+  akumas.push(...akumasRoubo.slice(0, qtdPegarRouboAkuma));
+  
+  let faltaAkuma = qtdAkuma - akumas.length;
+  if (faltaAkuma > 0) {
+    akumas.push(...akumasNormal.slice(0, faltaAkuma));
+  }
+
+  shuffleArray(ilhasRoubo);
+  shuffleArray(ilhasNormal);
+  
+  let ilhas = [];
+  let qtdPegarRouboIlha = Math.min(ilhasRoubo.length, qtdIlhas);
+  ilhas.push(...ilhasRoubo.slice(0, qtdPegarRouboIlha));
+  
+  let faltaIlha = qtdIlhas - ilhas.length;
+  if (faltaIlha > 0) {
+    ilhas.push(...ilhasNormal.slice(0, faltaIlha));
+  }
 
   akumas.sort((a, b) => a.name.localeCompare(b.name));
   ilhas.sort((a, b) => a.name.localeCompare(b.name));
