@@ -44,7 +44,7 @@ function updateSubtypes() {
     if (!newPrice.value) newPrice.value = "100.000.000";
     newSubtype.multiple = false;
     newSubtype.style.height = 'auto';
-    ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
+    ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica', 'Roubo'].forEach(s => {
       newSubtype.add(new Option(s, s));
     });
   } else {
@@ -114,10 +114,7 @@ onSnapshot(colRef, (snapshot) => {
 
   tempItems.forEach(item => {
     const chave = item.name.toLowerCase() + "_" + item.type;
-    
-    if (nomesVistos.has(chave)) {
-      deleteDoc(doc(db, "lista_one_piece_db", item.id));
-    } else {
+    if (!nomesVistos.has(chave)) {
       nomesVistos.add(chave);
       items.push(item);
     }
@@ -202,6 +199,8 @@ function renderList() {
     if (a.type !== b.type) return a.type.localeCompare(b.type);
     return a.name.localeCompare(b.name);
   });
+
+  const fragmento = document.createDocumentFragment();
 
   filtered.forEach(item => {
     const li = document.createElement('li');
@@ -325,7 +324,7 @@ function renderList() {
           editPrice.style.display = 'block';
           editSubtype.multiple = false;
           editSubtype.style.height = 'auto';
-          ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica'].forEach(s => {
+          ['Paramecia', 'Paramecia Especial', 'Logia', 'Zoan', 'Zoan Ancestral', 'Zoan Mítica', 'Roubo'].forEach(s => {
             editSubtype.add(new Option(s, s, false, s === item.subtype));
           });
         } else {
@@ -404,8 +403,10 @@ function renderList() {
     actionsDiv.appendChild(delBtn);
     li.appendChild(actionsDiv);
 
-    itemList.appendChild(li);
+    fragmento.appendChild(li);
   });
+  
+  itemList.appendChild(fragmento);
 }
 
 searchInput.addEventListener('keyup', renderList);
