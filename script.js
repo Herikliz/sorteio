@@ -188,6 +188,7 @@ function renderList() {
     if (cat === 'Paramecias' && item.type === 'Akuma no Mi' && item.subtype.includes('Paramecia')) matchCat = true;
     if (cat === 'Logias' && item.type === 'Akuma no Mi' && item.subtype === 'Logia') matchCat = true;
     if (cat === 'Zoans' && item.type === 'Akuma no Mi' && item.subtype.includes('Zoan')) matchCat = true;
+    if (cat === 'Roubo' && item.type === 'Akuma no Mi' && item.subtype === 'Roubo') matchCat = true;
     if (cat === 'AkumasUso' && item.type === 'Akuma no Mi' && item.ocupada) matchCat = true;
     if (cat === 'Ilhas' && item.type === 'Ilha') matchCat = true;
     if (cat.startsWith('Ilha-') && item.type === 'Ilha' && item.mar === cat.substring(5)) matchCat = true;
@@ -448,7 +449,12 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
   sorteioResult.innerHTML = '';
   sorteioResult.style.display = 'none';
 
-  let qtdAkuma = parseInt(document.getElementById('sorteioQtdAkuma').value) || 0;
+  let minQtd = parseInt(document.getElementById('sorteioQtdAkumaMin').value) || 0;
+  let maxQtd = parseInt(document.getElementById('sorteioQtdAkumaMax').value) || 0;
+  let qtdAkuma = minQtd;
+  if (maxQtd > minQtd) {
+    qtdAkuma = Math.floor(Math.random() * (maxQtd - minQtd + 1)) + minQtd;
+  }
   let qtdIlhas = parseInt(document.getElementById('sorteioQtdIlha').value) || 0;
 
   let minPreco = parseInt(sorteioMinPreco.value.replace(/\D/g, '')) || 100000000;

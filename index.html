@@ -54,6 +54,7 @@
           <option value="Paramecias">Somente Paramecias</option>
           <option value="Logias">Somente Logias</option>
           <option value="Zoans">Somente Zoans</option>
+          <option value="Roubo">Somente Roubo</option>
           <option value="AkumasUso">Akumas em Uso</option>
           <option value="Ilhas">Somente Ilhas</option>
           <option value="Ilha-East Blue">East Blue</option>
@@ -94,8 +95,11 @@
       <div class="config-section akuma-config">
         <h3>🍎 Akuma no Mi</h3>
         <div class="config-row">
-          <label>Quantidade:</label>
-          <input type="number" id="sorteioQtdAkuma" value="0" min="0">
+          <label>Quantidade (Mín-Máx):</label>
+          <div class="price-inputs">
+            <input type="number" id="sorteioQtdAkumaMin" value="0" min="0">
+            <input type="number" id="sorteioQtdAkumaMax" value="0" min="0">
+          </div>
         </div>
         <div class="config-group">
           <h4>Faixa de Preço</h4>
