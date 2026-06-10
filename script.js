@@ -593,10 +593,8 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
         texto += `${index + 1}. *${akuma.name} - ฿${precoFinal.toLocaleString('pt-BR')}*\n`;
       });
       
-      texto += "\nAbaixo estão os links que lhes permite verificar qual é a cada uma das Frutas.\n";
-      texto += "1. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/logia\n";
-      texto += "2. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/paramecia\n";
-      texto += "3. https://sites.google.com/view/new-seas-op/submundo/akuma-no-mi/zoan";
+      texto += "\nAbaixo está o link que lhes permite verificar qual é a cada uma das Frutas.\n";
+      texto += "https://herikliz.github.io/New-Seas-RPG/akuma-no-mi.html";
       
       navigator.clipboard.writeText(texto).then(() => {
         alert("Sorteio copiado com sucesso!");
