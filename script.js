@@ -593,8 +593,7 @@ document.getElementById('btnConfirmarSorteio').addEventListener('click', () => {
         texto += `${index + 1}. *${akuma.name} - ฿${precoFinal.toLocaleString('pt-BR')}*\n`;
       });
       
-      texto += "\nAbaixo está o link que lhes permite verificar qual é a cada uma das Frutas.\n";
-      texto += "https://herikliz.github.io/New-Seas-RPG/akuma-no-mi.html";
+      texto += "Aqui está o link que lhes permite verificar qual é a cada uma das Frutas: https://herikliz.github.io/New-Seas-RPG/akuma-no-mi.html";
       
       navigator.clipboard.writeText(texto).then(() => {
         alert("Sorteio copiado com sucesso!");
